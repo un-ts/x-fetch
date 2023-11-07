@@ -407,7 +407,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/core@npm:^7.22.5":
+"@babel/core@npm:^7.12.3, @babel/core@npm:^7.22.5":
   version: 7.23.2
   resolution: "@babel/core@npm:7.23.2"
   dependencies:
@@ -728,7 +728,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/parser@npm:^7.22.15, @babel/parser@npm:^7.23.0":
+"@babel/parser@npm:^7.14.7, @babel/parser@npm:^7.22.15, @babel/parser@npm:^7.23.0":
   version: 7.23.0
   resolution: "@babel/parser@npm:7.23.0"
   bin:
@@ -2086,13 +2086,6 @@ __metadata:
     "@babel/helper-validator-identifier": "npm:^7.22.20"
     to-fast-properties: "npm:^2.0.0"
   checksum: ca5b896a26c91c5672254725c4c892a35567d2122afc47bd5331d1611a7f9230c19fc9ef591a5a6f80bf0d80737e104a9ac205c96447c74bee01d4319db58001
-  languageName: node
-  linkType: hard
-
-"@bcoe/v8-coverage@npm:^0.2.3":
-  version: 0.2.3
-  resolution: "@bcoe/v8-coverage@npm:0.2.3"
-  checksum: 1a1f0e356a3bb30b5f1ced6f79c413e6ebacf130421f15fac5fcd8be5ddf98aedb4404d7f5624e3285b700e041f9ef938321f3ca4d359d5b716f96afa120d88d
   languageName: node
   linkType: hard
 
@@ -3639,7 +3632,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jridgewell/trace-mapping@npm:^0.3.12, @jridgewell/trace-mapping@npm:^0.3.17, @jridgewell/trace-mapping@npm:^0.3.18, @jridgewell/trace-mapping@npm:^0.3.9":
+"@jridgewell/trace-mapping@npm:^0.3.17, @jridgewell/trace-mapping@npm:^0.3.18, @jridgewell/trace-mapping@npm:^0.3.9":
   version: 0.3.20
   resolution: "@jridgewell/trace-mapping@npm:0.3.20"
   dependencies:
@@ -4803,13 +4796,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/istanbul-lib-coverage@npm:^2.0.1":
-  version: 2.0.5
-  resolution: "@types/istanbul-lib-coverage@npm:2.0.5"
-  checksum: 978eaf327f9a238eb1e2828b93b4b48e288ffb88c4be81330c74477ab8b93fac41a8784260d72bdd9995535d70608f738199b6364fd3344842e924a3ec3301e7
-  languageName: node
-  linkType: hard
-
 "@types/json-schema@npm:^7.0.9":
   version: 7.0.14
   resolution: "@types/json-schema@npm:7.0.14"
@@ -5026,13 +5012,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/web@npm:^0.0.119":
-  version: 0.0.119
-  resolution: "@types/web@npm:0.0.119"
-  checksum: abaabd19a59368939e5048590d6287bb5a9707031434ca11cdfa6f348ed42744f673f02cdca0de8c744898ffdc5d100df2e606abffaacb32c903b47a2ef8ac7e
-  languageName: node
-  linkType: hard
-
 "@types/whatwg-mimetype@npm:3.0.1":
   version: 3.0.1
   resolution: "@types/whatwg-mimetype@npm:3.0.1"
@@ -5179,24 +5158,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitest/coverage-v8@npm:^0.34.6":
+"@vitest/coverage-istanbul@npm:^0.34.6":
   version: 0.34.6
-  resolution: "@vitest/coverage-v8@npm:0.34.6"
+  resolution: "@vitest/coverage-istanbul@npm:0.34.6"
   dependencies:
-    "@ampproject/remapping": "npm:^2.2.1"
-    "@bcoe/v8-coverage": "npm:^0.2.3"
     istanbul-lib-coverage: "npm:^3.2.0"
+    istanbul-lib-instrument: "npm:^6.0.0"
     istanbul-lib-report: "npm:^3.0.1"
     istanbul-lib-source-maps: "npm:^4.0.1"
     istanbul-reports: "npm:^3.1.5"
-    magic-string: "npm:^0.30.1"
     picocolors: "npm:^1.0.0"
-    std-env: "npm:^3.3.3"
     test-exclude: "npm:^6.0.0"
-    v8-to-istanbul: "npm:^9.1.0"
   peerDependencies:
     vitest: ">=0.32.0 <1"
-  checksum: f25afdc496d44b387752b88e82e4643557711f72d88d3da363785386cbd523af3f6049f5f91a3e6afc9c2417aa1d97e09801c0e5e62cb96cc9d419cc9629de2a
+  checksum: f86ea2b11842a9528e5483683735cc402342e0b98dce00d5cd7ff2bf1da542ec704dc3ba58184f9df96798d8b0c1c6d24d6d11fad4eaac9999487e45d5a3e8b0
   languageName: node
   linkType: hard
 
@@ -9504,6 +9479,45 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fetch-api@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "fetch-api@workspace:."
+  dependencies:
+    "@1stg/app-config": "npm:^9.0.0"
+    "@1stg/lib-config": "npm:^12.0.0"
+    "@changesets/changelog-github": "npm:^0.4.8"
+    "@changesets/cli": "npm:^2.26.2"
+    "@mdx-js/rollup": "npm:^3.0.0"
+    "@pkgr/rollup": "npm:^4.1.3"
+    "@size-limit/preset-small-lib": "npm:^10.0.2"
+    "@types/mdx": "npm:^2.0.9"
+    "@types/node": "npm:^20.8.10"
+    "@types/react": "npm:^18.2.36"
+    "@types/react-dom": "npm:^18.2.14"
+    "@vitejs/plugin-react-swc": "npm:^3.4.1"
+    "@vitest/coverage-istanbul": "npm:^0.34.6"
+    commitlint: "npm:^18.2.0"
+    eslint: "npm:^8.53.0"
+    github-markdown-css: "npm:^5.4.0"
+    lint-staged: "npm:^13.3.0"
+    npm-run-all: "npm:^4.1.5"
+    react: "npm:^18.2.0"
+    react-dom: "npm:^18.2.0"
+    react-router-dom: "npm:^6.18.0"
+    rehype-slug: "npm:^6.0.0"
+    remark-gfm: "npm:^4.0.0"
+    simple-git-hooks: "npm:^2.9.0"
+    size-limit: "npm:^10.0.2"
+    stylelint: "npm:^15.11.0"
+    tslib: "npm:^2.6.2"
+    type-coverage: "npm:^2.27.0"
+    typescript: "npm:^5.2.2"
+    unplugin-auto-import: "npm:^0.16.7"
+    vite: "npm:^4.5.0"
+    vitest: "npm:^0.34.6"
+  languageName: unknown
+  linkType: soft
+
 "figures@npm:^1.3.5":
   version: 1.7.0
   resolution: "figures@npm:1.7.0"
@@ -11620,6 +11634,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"istanbul-lib-instrument@npm:^6.0.0":
+  version: 6.0.1
+  resolution: "istanbul-lib-instrument@npm:6.0.1"
+  dependencies:
+    "@babel/core": "npm:^7.12.3"
+    "@babel/parser": "npm:^7.14.7"
+    "@istanbuljs/schema": "npm:^0.1.2"
+    istanbul-lib-coverage: "npm:^3.2.0"
+    semver: "npm:^7.5.4"
+  checksum: 95fd8c66e586840989cb3c7819c6da66c4742a6fedbf16b51a5c7f1898941ad07b79ddff020f479d3a1d76743ecdbf255d93c35221875687477d4b118026e7e7
+  languageName: node
+  linkType: hard
+
 "istanbul-lib-report@npm:^3.0.0, istanbul-lib-report@npm:^3.0.1":
   version: 3.0.1
   resolution: "istanbul-lib-report@npm:3.0.1"
@@ -12055,46 +12082,6 @@ __metadata:
   checksum: e1c3e75b5c430d9aa4c32c83c8a611e4ca53608ca78e3ea3bf6bbd9d017e4776d05d86e27df7901baebd3afa732abede9f26f715b8c1be19e95505c7a3a7b589
   languageName: node
   linkType: hard
-
-"lib-boilerplate@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "lib-boilerplate@workspace:."
-  dependencies:
-    "@1stg/app-config": "npm:^9.0.0"
-    "@1stg/lib-config": "npm:^12.0.0"
-    "@changesets/changelog-github": "npm:^0.4.8"
-    "@changesets/cli": "npm:^2.26.2"
-    "@mdx-js/rollup": "npm:^3.0.0"
-    "@pkgr/rollup": "npm:^4.1.3"
-    "@size-limit/preset-small-lib": "npm:^10.0.2"
-    "@types/mdx": "npm:^2.0.9"
-    "@types/node": "npm:^20.8.10"
-    "@types/react": "npm:^18.2.36"
-    "@types/react-dom": "npm:^18.2.14"
-    "@types/web": "npm:^0.0.119"
-    "@vitejs/plugin-react-swc": "npm:^3.4.1"
-    "@vitest/coverage-v8": "npm:^0.34.6"
-    commitlint: "npm:^18.2.0"
-    eslint: "npm:^8.53.0"
-    github-markdown-css: "npm:^5.4.0"
-    lint-staged: "npm:^13.3.0"
-    npm-run-all: "npm:^4.1.5"
-    react: "npm:^18.2.0"
-    react-dom: "npm:^18.2.0"
-    react-router-dom: "npm:^6.18.0"
-    rehype-slug: "npm:^6.0.0"
-    remark-gfm: "npm:^4.0.0"
-    simple-git-hooks: "npm:^2.9.0"
-    size-limit: "npm:^10.0.2"
-    stylelint: "npm:^15.11.0"
-    tslib: "npm:^2.6.2"
-    type-coverage: "npm:^2.27.0"
-    typescript: "npm:^5.2.2"
-    unplugin-auto-import: "npm:^0.16.7"
-    vite: "npm:^4.5.0"
-    vitest: "npm:^0.34.6"
-  languageName: unknown
-  linkType: soft
 
 "lib-upng@npm:3.0.0":
   version: 3.0.0
@@ -20902,17 +20889,6 @@ __metadata:
   version: 3.0.1
   resolution: "v8-compile-cache-lib@npm:3.0.1"
   checksum: 88d3423a52b6aaf1836be779cab12f7016d47ad8430dffba6edf766695e6d90ad4adaa3d8eeb512cc05924f3e246c4a4ca51e089dccf4402caa536b5e5be8961
-  languageName: node
-  linkType: hard
-
-"v8-to-istanbul@npm:^9.1.0":
-  version: 9.1.3
-  resolution: "v8-to-istanbul@npm:9.1.3"
-  dependencies:
-    "@jridgewell/trace-mapping": "npm:^0.3.12"
-    "@types/istanbul-lib-coverage": "npm:^2.0.1"
-    convert-source-map: "npm:^2.0.0"
-  checksum: d6ce9f6d97c53a401098fe42018f32be81c99830bcf44ee2717332e20a7df3e364a3f322c10dab4ea94488e81dde462295149cdfb44f48e8ef2829e3afd09752
   languageName: node
   linkType: hard
 

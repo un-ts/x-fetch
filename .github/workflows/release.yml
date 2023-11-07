@@ -33,8 +33,8 @@ jobs:
         with:
           publish: yarn release
           version: yarn changeset version
-          commit: 'chore: release lib-boilerplate'
-          title: 'chore: release lib-boilerplate'
+          commit: 'chore: release fetch-api'
+          title: 'chore: release fetch-api'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -1,10 +1,10 @@
-# lib-boilerplate
+# fetch-api
 
-[![GitHub Actions](https://github.com/un-ts/lib-boilerplate/workflows/CI/badge.svg)](https://github.com/un-ts/lib-boilerplate/actions/workflows/ci.yml)
-[![Codecov](https://img.shields.io/codecov/c/github/un-ts/lib-boilerplate.svg)](https://codecov.io/gh/un-ts/lib-boilerplate)
-[![type-coverage](https://img.shields.io/badge/dynamic/json.svg?label=type-coverage&prefix=%E2%89%A5&suffix=%&query=$.typeCoverage.atLeast&uri=https%3A%2F%2Fraw.githubusercontent.com%2Fun-ts%2Flib-boilerplate%2Fmain%2Fpackage.json)](https://github.com/plantain-00/type-coverage)
-[![npm](https://img.shields.io/npm/v/lib-boilerplate.svg)](https://www.npmjs.com/package/lib-boilerplate)
-[![GitHub Release](https://img.shields.io/github/release/un-ts/lib-boilerplate)](https://github.com/un-ts/lib-boilerplate/releases)
+[![GitHub Actions](https://github.com/un-ts/fetch-api/workflows/CI/badge.svg)](https://github.com/un-ts/fetch-api/actions/workflows/ci.yml)
+[![Codecov](https://img.shields.io/codecov/c/github/un-ts/fetch-api.svg)](https://codecov.io/gh/un-ts/fetch-api)
+[![type-coverage](https://img.shields.io/badge/dynamic/json.svg?label=type-coverage&prefix=%E2%89%A5&suffix=%&query=$.typeCoverage.atLeast&uri=https%3A%2F%2Fraw.githubusercontent.com%2Fun-ts%2Ffetch-api%2Fmain%2Fpackage.json)](https://github.com/plantain-00/type-coverage)
+[![npm](https://img.shields.io/npm/v/fetch-api.svg)](https://www.npmjs.com/package/fetch-api)
+[![GitHub Release](https://img.shields.io/github/release/un-ts/fetch-api)](https://github.com/un-ts/fetch-api/releases)
 
 [![Conventional Commits](https://img.shields.io/badge/conventional%20commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 [![Renovate enabled](https://img.shields.io/badge/renovate-enabled-brightgreen.svg)](https://renovatebot.com)
@@ -12,7 +12,7 @@
 [![Code Style: Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 [![changesets](https://img.shields.io/badge/maintained%20with-changesets-176de3.svg)](https://github.com/changesets/changesets)
 
-A simple library boilerplate.
+A simple but elegant `fetch` API wrapper, use `fetch` like a charm
 
 ## TOC <!-- omit in toc -->
 
@@ -30,21 +30,51 @@ A simple library boilerplate.
 
 ```sh
 # pnpm
-pnpm add lib-boilerplate
+pnpm add fetch-api
 
 # yarn
-yarn add lib-boilerplate
+yarn add fetch-api
 
 # npm
-npm i lib-boilerplate
+npm i fetch-api
 ```
 
 ### API
 
-```js
-import echo from 'lib-boilerplate'
+```ts
+import { ApiMethod, createFetchApi, fetchApi, interceptors } from 'fetch-api'
 
-echo()
+// plain url, GET method
+await fetchApi('url')
+
+// with options, `body`, `query`, etc.
+await fetchApi('url', {
+  method: ApiMethod.POST, // or 'POST'
+  // plain object or array, or BodyInit
+  body: {},
+  // URLSearchParametersOptions
+  query: {
+    key: 'value',
+  },
+  // json: boolean, // whether auto stringify body to json, default true for plain object or array, otherwise false
+  // type: 'arrayBuffer' | 'blob' | 'json' | 'text' | null, `null` means plain `Response`
+})
+
+const interceptor: ApiInterceptor = (req, next) => {
+  // do something with req
+  const res = await next(req)
+  // do something with res
+  return res
+}
+
+// add interceptor
+interceptors.use(interceptor)
+
+// remove interceptor
+interceptors.eject(interceptor)
+
+// create a new isolated `fetchApi` with its own `interceptors`
+const { fetchApi, interceptors } = createFetchApi()
 ```
 
 ## Sponsors

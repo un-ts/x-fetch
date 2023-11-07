@@ -9,11 +9,12 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      'lib-boilerplate': './src/index.ts',
+      'fetch-api': './src/index.ts',
     },
   },
   test: {
     coverage: {
+      provider: 'istanbul',
       reporter: ['lcov', 'json', 'text'],
     },
   },
