@@ -1,0 +1,7 @@
+.type-coverage
+.vercel
+.yarn
+coverage
+dist
+lib
+/auto-imports.d.ts

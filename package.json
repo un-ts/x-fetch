@@ -1,0 +1,99 @@
+{
+  "name": "lib-boilerplate",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "A simple library boilerplate.",
+  "repository": "git+https://github.com/un-ts/lib-boilerplate.git",
+  "author": "JounQin (https://www.1stG.me) <admin@1stg.me>",
+  "funding": "https://opencollective.com/unts",
+  "license": "MIT",
+  "packageManager": "yarn@4.0.1",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "exports": "./src/index.ts",
+  "files": [
+    "lib",
+    "!**/*.tsbuildinfo"
+  ],
+  "scripts": {
+    "build": "run-p 'build:*'",
+    "build:r": "r -f cjs",
+    "build:tsc": "tsc -p src",
+    "dev": "vitest",
+    "docs:build": "vite build docs --emptyOutDir",
+    "docs:dev": "vite docs",
+    "lint": "run-p 'lint:*'",
+    "lint:es": "eslint . --cache -f friendly --max-warnings 10",
+    "lint:style": "stylelint . --cache",
+    "lint:tsc": "tsc --noEmit",
+    "prepare": "simple-git-hooks",
+    "release": "yarn build && yarn changeset publish",
+    "serve": "vite preview docs",
+    "test": "vitest run --coverage",
+    "typecov": "type-coverage",
+    "vercel-build": "yarn docs:build"
+  },
+  "dependencies": {
+    "tslib": "^2.6.2"
+  },
+  "devDependencies": {
+    "@1stg/app-config": "^9.0.0",
+    "@1stg/lib-config": "^12.0.0",
+    "@changesets/changelog-github": "^0.4.8",
+    "@changesets/cli": "^2.26.2",
+    "@mdx-js/rollup": "^3.0.0",
+    "@pkgr/rollup": "^4.1.3",
+    "@size-limit/preset-small-lib": "^10.0.2",
+    "@types/mdx": "^2.0.9",
+    "@types/node": "^20.8.10",
+    "@types/react": "^18.2.36",
+    "@types/react-dom": "^18.2.14",
+    "@types/web": "^0.0.119",
+    "@vitejs/plugin-react-swc": "^3.4.1",
+    "@vitest/coverage-v8": "^0.34.6",
+    "commitlint": "^18.2.0",
+    "eslint": "^8.53.0",
+    "github-markdown-css": "^5.4.0",
+    "lint-staged": "^13.3.0",
+    "npm-run-all": "^4.1.5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.18.0",
+    "rehype-slug": "^6.0.0",
+    "remark-gfm": "^4.0.0",
+    "simple-git-hooks": "^2.9.0",
+    "size-limit": "^10.0.2",
+    "stylelint": "^15.11.0",
+    "type-coverage": "^2.27.0",
+    "typescript": "^5.2.2",
+    "unplugin-auto-import": "^0.16.7",
+    "vite": "^4.5.0",
+    "vitest": "^0.34.6"
+  },
+  "publishConfig": {
+    "main": "./lib/index.cjs",
+    "module": "./lib/index.js",
+    "exports": {
+      "types": "./lib/index.d.ts",
+      "import": "./lib/index.js",
+      "require": "./lib/index.cjs"
+    },
+    "types": "./lib/index.d.ts"
+  },
+  "size-limit": [
+    {
+      "path": "lib/index.js"
+    }
+  ],
+  "typeCoverage": {
+    "atLeast": 100,
+    "cache": true,
+    "detail": true,
+    "ignoreAsAssertion": true,
+    "ignoreNonNullAssertion": true,
+    "showRelativePath": true,
+    "strict": true,
+    "update": true
+  }
+}

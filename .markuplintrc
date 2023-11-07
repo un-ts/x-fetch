@@ -1,0 +1,6 @@
+{
+  "extends": "@1stg/markuplint-config",
+  "rules": {
+    "required-h1": false
+  }
+}

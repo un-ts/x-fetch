@@ -1,0 +1,12 @@
+coverage
+dist
+lib
+LICENSE
+*.json
+*.lock
+*.log
+*.patch
+*.ts
+*.tsx
+*.yaml
+*.yml
