@@ -1,9 +1,9 @@
 {
-  "name": "fetch-api",
+  "name": "x-fetch",
   "version": "0.1.0",
   "type": "module",
   "description": "A simple but elegant `fetch` API wrapper, use `fetch` like a charm",
-  "repository": "git+https://github.com/un-ts/fetch-api.git",
+  "repository": "git+https://github.com/un-ts/x-fetch.git",
   "author": "JounQin (https://www.1stG.me) <admin@1stg.me>",
   "funding": "https://opencollective.com/unts",
   "license": "MIT",

@@ -1,10 +1,10 @@
-# fetch-api
+# x-fetch
 
-[![GitHub Actions](https://github.com/un-ts/fetch-api/workflows/CI/badge.svg)](https://github.com/un-ts/fetch-api/actions/workflows/ci.yml)
-[![Codecov](https://img.shields.io/codecov/c/github/un-ts/fetch-api.svg)](https://codecov.io/gh/un-ts/fetch-api)
-[![type-coverage](https://img.shields.io/badge/dynamic/json.svg?label=type-coverage&prefix=%E2%89%A5&suffix=%&query=$.typeCoverage.atLeast&uri=https%3A%2F%2Fraw.githubusercontent.com%2Fun-ts%2Ffetch-api%2Fmain%2Fpackage.json)](https://github.com/plantain-00/type-coverage)
-[![npm](https://img.shields.io/npm/v/fetch-api.svg)](https://www.npmjs.com/package/fetch-api)
-[![GitHub Release](https://img.shields.io/github/release/un-ts/fetch-api)](https://github.com/un-ts/fetch-api/releases)
+[![GitHub Actions](https://github.com/un-ts/x-fetch/workflows/CI/badge.svg)](https://github.com/un-ts/x-fetch/actions/workflows/ci.yml)
+[![Codecov](https://img.shields.io/codecov/c/github/un-ts/x-fetch.svg)](https://codecov.io/gh/un-ts/x-fetch)
+[![type-coverage](https://img.shields.io/badge/dynamic/json.svg?label=type-coverage&prefix=%E2%89%A5&suffix=%&query=$.typeCoverage.atLeast&uri=https%3A%2F%2Fraw.githubusercontent.com%2Fun-ts%2Fx-fetch%2Fmain%2Fpackage.json)](https://github.com/plantain-00/type-coverage)
+[![npm](https://img.shields.io/npm/v/x-fetch.svg)](https://www.npmjs.com/package/x-fetch)
+[![GitHub Release](https://img.shields.io/github/release/un-ts/x-fetch)](https://github.com/un-ts/x-fetch/releases)
 
 [![Conventional Commits](https://img.shields.io/badge/conventional%20commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 [![Renovate enabled](https://img.shields.io/badge/renovate-enabled-brightgreen.svg)](https://renovatebot.com)
@@ -30,19 +30,19 @@ A simple but elegant `fetch` API wrapper, use `fetch` like a charm
 
 ```sh
 # pnpm
-pnpm add fetch-api
+pnpm add x-fetch
 
 # yarn
-yarn add fetch-api
+yarn add x-fetch
 
 # npm
-npm i fetch-api
+npm i x-fetch
 ```
 
 ### API
 
 ```ts
-import { ApiMethod, createFetchApi, fetchApi, interceptors } from 'fetch-api'
+import { ApiMethod, createFetchApi, fetchApi, interceptors } from 'x-fetch'
 
 // plain url, GET method
 await fetchApi('url')

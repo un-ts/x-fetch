@@ -1,4 +1,4 @@
-import { type ApiInterceptor, fetchApi, interceptors } from 'fetch-api'
+import { type ApiInterceptor, fetchApi, interceptors } from 'x-fetch'
 
 test('it should just work', async () => {
   expect(

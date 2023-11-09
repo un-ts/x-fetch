@@ -3,7 +3,7 @@
   "changelog": [
     "@changesets/changelog-github",
     {
-      "repo": "un-ts/fetch-api"
+      "repo": "un-ts/x-fetch"
     }
   ],
   "commit": false,

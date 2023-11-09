@@ -9,7 +9,7 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      'fetch-api': './src/index.ts',
+      'x-fetch': './src/index.ts',
     },
   },
   test: {
