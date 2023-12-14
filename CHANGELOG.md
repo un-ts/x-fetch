@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.1.3
+
+### Patch Changes
+
+- [#8](https://github.com/un-ts/x-fetch/pull/8) [`5d91037`](https://github.com/un-ts/x-fetch/commit/5d910377e1deb3494e29e9a3b04591e680de6f78) Thanks [@JounQin](https://github.com/JounQin)! - fix: known typings issue of `type` field
+
 ## 0.1.2
 
 ### Patch Changes
