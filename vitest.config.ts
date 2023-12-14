@@ -9,13 +9,14 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      'x-fetch': './src/index.ts',
+      'x-fetch': new URL('src/index.ts', import.meta.url).pathname,
     },
   },
   test: {
     coverage: {
       provider: 'istanbul',
       reporter: ['lcov', 'json', 'text'],
+      include: ['src'],
     },
   },
 })
