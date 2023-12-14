@@ -42,7 +42,9 @@ jobs:
           YARN_IGNORE_NODE: 1
 
       - name: Build, Lint and Test
-        run: yarn run-s build lint
+        run: |
+          yarn build
+          yarn lint
         env:
           EFF_NO_LINK_RULES: true
           PARSER_NO_WATCH: true
