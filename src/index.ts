@@ -14,11 +14,15 @@ export const ApiMethod = {
 
 export type ApiMethod = ValueOf<typeof ApiMethod>
 
-export interface FetchApiOptions extends Omit<RequestInit, 'body' | 'method'> {
+export interface FetchApiBaseOptions
+  extends Omit<RequestInit, 'body' | 'method'> {
   method?: ApiMethod
   body?: BodyInit | object
   query?: URLSearchParametersOptions
   json?: boolean
+}
+
+export interface FetchApiOptions extends FetchApiBaseOptions {
   type?: 'arrayBuffer' | 'blob' | 'json' | 'text' | null
 }
 
@@ -67,23 +71,24 @@ export const createFetchApi = () => {
 
   function fetchApi(
     url: string,
-    options: FetchApiOptions & { type: null },
+    options: FetchApiBaseOptions & { type: null },
   ): Promise<Response>
+  // @ts-expect-error -- no idea, it sucks
   function fetchApi(
     url: string,
-    options: FetchApiOptions & { type: 'arraybuffer' },
+    options: FetchApiBaseOptions & { type: 'arraybuffer' },
   ): Promise<ArrayBuffer>
   function fetchApi(
     url: string,
-    options: FetchApiOptions & { type: 'blob' },
+    options: FetchApiBaseOptions & { type: 'blob' },
   ): Promise<Blob>
   function fetchApi(
     url: string,
-    options: FetchApiOptions & { type: 'text' },
+    options: FetchApiBaseOptions & { type: 'text' },
   ): Promise<string>
   function fetchApi<T>(
     url: string,
-    options?: FetchApiOptions & { type?: 'json' },
+    options?: FetchApiBaseOptions & { type?: 'json' },
   ): Promise<T>
   // eslint-disable-next-line sonarjs/cognitive-complexity
   async function fetchApi(
