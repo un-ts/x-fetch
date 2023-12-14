@@ -10,6 +10,7 @@ jobs:
     strategy:
       matrix:
         node:
+          - 16
           - 18
           - 20
         os:
@@ -21,23 +22,34 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
 
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Setup Node.js ${{ matrix.node }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
           cache: yarn
-
-      - name: Enable Corepack
-        run: corepack enable
+        env:
+          # https://github.com/actions/setup-node/issues/531#issuecomment-1819151412
+          SKIP_YARN_COREPACK_CHECK: 1
+          YARN_IGNORE_NODE: 1
 
       - name: Install Dependencies
         run: yarn --immutable
+        env:
+          SKIP_YARN_COREPACK_CHECK: 1
+          YARN_IGNORE_NODE: 1
 
       - name: Build, Lint and Test
-        run: yarn run-s build lint test
+        run: |
+          yarn build
+          yarn lint
         env:
           EFF_NO_LINK_RULES: true
           PARSER_NO_WATCH: true
+          SKIP_YARN_COREPACK_CHECK: 1
+          YARN_IGNORE_NODE: 1
 
       - name: Codecov
         uses: codecov/codecov-action@v3

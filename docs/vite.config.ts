@@ -6,13 +6,10 @@ import { defineConfig } from 'vite'
 
 export default defineConfig({
   plugins: [
-    {
-      enforce: 'pre',
-      ...mdx({
-        remarkPlugins: [remarkGfm],
-        rehypePlugins: [rehypeSlug],
-      }),
-    },
+    mdx({
+      remarkPlugins: [remarkGfm],
+      rehypePlugins: [rehypeSlug],
+    }),
     react(),
   ],
   build: {

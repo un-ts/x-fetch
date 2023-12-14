@@ -47,7 +47,7 @@ import { ApiMethod, createFetchApi, fetchApi, interceptors } from 'x-fetch'
 // plain url, GET method
 await fetchApi('url')
 
-// with options, `body`, `query`, etc.
+// with options, `method`, `body`, `query`, etc.
 await fetchApi('url', {
   method: ApiMethod.POST, // or 'POST'
   // plain object or array, or BodyInit
