@@ -1,6 +1,6 @@
 {
   "name": "x-fetch",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "type": "module",
   "description": "A simple but elegant `fetch` API wrapper, use `fetch` like a charm",
   "repository": "git+https://github.com/un-ts/x-fetch.git",
