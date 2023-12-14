@@ -13,6 +13,7 @@ export default defineConfig({
     },
   },
   test: {
+    environment: 'edge-runtime',
     coverage: {
       provider: 'istanbul',
       reporter: ['lcov', 'json', 'text'],
