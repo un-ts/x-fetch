@@ -11,7 +11,14 @@
   "engines": {
     "node": ">=4.0.0"
   },
-  "exports": "./src/index.ts",
+  "main": "./lib/index.cjs",
+  "module": "./lib/index.js",
+  "exports": {
+    "types": "./lib/index.d.ts",
+    "import": "./lib/index.js",
+    "require": "./lib/index.cjs"
+  },
+  "types": "./lib/index.d.ts",
   "files": [
     "lib",
     "!**/*.tsbuildinfo"
@@ -78,16 +85,6 @@
     "lint-staged": "^15.2.0",
     "prettier": "^2.8.8",
     "rollup": "^4.3.0"
-  },
-  "publishConfig": {
-    "main": "./lib/index.cjs",
-    "module": "./lib/index.js",
-    "exports": {
-      "types": "./lib/index.d.ts",
-      "import": "./lib/index.js",
-      "require": "./lib/index.cjs"
-    },
-    "types": "./lib/index.d.ts"
   },
   "size-limit": [
     {
