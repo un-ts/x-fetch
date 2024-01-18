@@ -1,44 +1,19 @@
-import type { URLSearchParametersOptions, ValueOf } from './types.js'
-import { CONTENT_TYPE, isPlainObject, normalizeUrl } from './utils.js'
+import {
+  ApiMethod,
+  FetchApiOptions,
+  InterceptorRequest,
+  type ApiInterceptor,
+  type FetchApiBaseOptions,
+} from './types.js'
+import {
+  CONTENT_TYPE,
+  extractDataFromResponse,
+  isPlainObject,
+  normalizeUrl,
+} from './utils.js'
 
-export type * from './types.js'
+export * from './types.js'
 export * from './utils.js'
-
-export const ApiMethod = {
-  GET: 'GET',
-  POST: 'POST',
-  PATCH: 'PATCH',
-  PUT: 'PUT',
-  DELETE: 'DELETE',
-} as const
-
-export type ApiMethod = ValueOf<typeof ApiMethod>
-
-export interface FetchApiBaseOptions
-  extends Omit<RequestInit, 'body' | 'method'> {
-  method?: ApiMethod
-  body?: BodyInit | object
-  query?: URLSearchParametersOptions
-  json?: boolean
-}
-
-export interface FetchApiOptions extends FetchApiBaseOptions {
-  type?: 'arrayBuffer' | 'blob' | 'json' | 'text' | null
-}
-
-export interface InterceptorRequest extends FetchApiOptions {
-  url: string
-}
-
-export type ApiInterceptor = (
-  request: InterceptorRequest,
-  next: (request: InterceptorRequest) => PromiseLike<Response>,
-) => PromiseLike<Response> | Response
-
-export interface ResponseError<T = never> extends Error {
-  data?: T | null
-  response?: Response | null
-}
 
 export class ApiInterceptors {
   readonly #interceptors: ApiInterceptor[] = []
@@ -66,7 +41,7 @@ export class ApiInterceptors {
   }
 }
 
-export const createFetchApi = () => {
+export const createFetchApi = (fetch = globalThis.fetch) => {
   const interceptors = new ApiInterceptors()
 
   function fetchApi(
@@ -90,7 +65,6 @@ export const createFetchApi = () => {
     url: string,
     options?: FetchApiBaseOptions & { type?: 'json' },
   ): Promise<T>
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   async function fetchApi(
     url: string,
     {
@@ -122,16 +96,8 @@ export const createFetchApi = () => {
       if (response.ok) {
         return response
       }
-      let data: unknown = null
-      if (type != null) {
-        try {
-          data = await response.clone()[type]()
-        } catch {
-          data = await response.clone().text()
-        }
-      }
       throw Object.assign(new Error(response.statusText), {
-        data,
+        data: extractDataFromResponse(response, type),
         response,
       })
     }
@@ -143,7 +109,8 @@ export const createFetchApi = () => {
       headers,
       ...rest,
     })
-    return type == null ? response : response.clone()[type]()
+
+    return type == null ? response : extractDataFromResponse(response, type)
   }
 
   return { interceptors, fetchApi }
