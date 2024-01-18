@@ -9,7 +9,7 @@
   "license": "MIT",
   "packageManager": "yarn@4.0.2",
   "engines": {
-    "node": ">=4.0.0"
+    "node": ">=14.0.0"
   },
   "main": "./lib/index.cjs",
   "module": "./lib/index.js",
@@ -24,7 +24,7 @@
     "!**/*.tsbuildinfo"
   ],
   "scripts": {
-    "build": "yarn test && concurrently 'yarn:build:*'",
+    "build": "yarn test && concurrently -r 'yarn:build:*'",
     "build:r": "r -f cjs",
     "build:tsc": "tsc -p src",
     "dev": "vitest",
