@@ -9,10 +9,10 @@ export type AnyArray<T = unknown> = Readonlyable<T[]>
 export type Arrayable<T, R extends boolean = false> = [R] extends [never]
   ? T | T[]
   : R extends true
-  ? Readonly<T> | readonly T[]
-  : R extends false
-  ? AnyArray<T> | Readonlyable<T>
-  : never
+    ? Readonly<T> | readonly T[]
+    : R extends false
+      ? AnyArray<T> | Readonlyable<T>
+      : never
 
 export type ValueOf<T> = T[keyof T]
 
