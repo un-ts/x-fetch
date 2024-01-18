@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.2.0
+
+### Minor Changes
+
+- [#11](https://github.com/un-ts/x-fetch/pull/11) [`62435b7`](https://github.com/un-ts/x-fetch/commit/62435b78b8644f67c9bb670d23afaf3a101dac25) Thanks [@JounQin](https://github.com/JounQin)! - feat: add extractDataFromResponse util for better data from response
+
 ## 0.1.3
 
 ### Patch Changes
