@@ -60,31 +60,38 @@ export const normalizeUrl = (url: string, query?: URLSearchParamsOptions) => {
 export async function extractDataFromResponse(
   res: Response,
   type: null,
+  fallback?: boolean,
 ): Promise<Response>
 export async function extractDataFromResponse(
   res: Response,
   type: 'arrayBuffer',
+  fallback?: boolean,
 ): Promise<ArrayBuffer>
 export async function extractDataFromResponse(
   res: Response,
   type: 'blob',
+  fallback?: boolean,
 ): Promise<Blob>
 export async function extractDataFromResponse<T>(
   res: Response,
   type: 'json',
+  fallback?: boolean,
 ): Promise<T>
 export async function extractDataFromResponse(
   res: Response,
   type: 'text',
+  fallback?: boolean,
 ): Promise<string>
 export async function extractDataFromResponse(
   res: Response,
   type: ResponseType,
+  fallback?: boolean,
 ): Promise<unknown>
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export async function extractDataFromResponse(
   res: Response,
   type: ResponseType,
+  fallback?: boolean,
 ) {
   let data: unknown
   if (type != null) {
@@ -93,15 +100,26 @@ export async function extractDataFromResponse(
         // data could be empty text
         data = await res.clone().text()
       } catch {}
-      if (type === 'json' && (data = (data as string).trim())) {
-        try {
-          data = JSON.parse(data as string)
-        } catch {}
+      if (type === 'json') {
+        if ((data = (data as string).trim())) {
+          try {
+            data = JSON.parse(data as string)
+          } catch (err) {
+            if (!fallback) {
+              throw err
+            }
+          }
+        } else {
+          data = null
+        }
       }
     } else {
       try {
         data = await res.clone()[type]()
-      } catch {
+      } catch (err) {
+        if (!fallback) {
+          throw err
+        }
         data = await res.clone().text()
       }
     }

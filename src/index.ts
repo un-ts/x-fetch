@@ -97,7 +97,7 @@ export const createFetchApi = (fetch = globalThis.fetch) => {
         return response
       }
       throw Object.assign(new Error(response.statusText), {
-        data: extractDataFromResponse(response, type),
+        data: extractDataFromResponse(response, type, true),
         response,
       })
     }
