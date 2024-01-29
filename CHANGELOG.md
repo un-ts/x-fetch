@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.2.1
+
+### Patch Changes
+
+- [#14](https://github.com/un-ts/x-fetch/pull/14) [`5e1cd70`](https://github.com/un-ts/x-fetch/commit/5e1cd7095613a1d1374d5af8fbd9bd092964ed8e) Thanks [@JounQin](https://github.com/JounQin)! - fix: only fallback to text on error
+
 ## 0.2.0
 
 ### Minor Changes
