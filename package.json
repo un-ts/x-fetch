@@ -15,8 +15,8 @@
   "module": "./lib/index.js",
   "exports": {
     "types": "./lib/index.d.ts",
-    "import": "./lib/index.js",
-    "require": "./lib/index.cjs"
+    "require": "./lib/index.cjs",
+    "default": "./lib/index.js"
   },
   "types": "./lib/index.d.ts",
   "files": [

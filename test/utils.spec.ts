@@ -43,7 +43,15 @@ test('extractDataFromResponse', async () => {
   expect(await extractDataFromResponse(new Response(), 'text')).toBe('')
   expect(await extractDataFromResponse(new Response(null), 'text')).toBe('')
   expect(await extractDataFromResponse(new Response('foo'), 'text')).toBe('foo')
-  expect(await extractDataFromResponse(new Response('foo'), 'json')).toBe('foo')
+  await expect(() =>
+    extractDataFromResponse(new Response('foo'), 'json'),
+  ).rejects.toThrow(
+    // eslint-disable-next-line unicorn/better-regex, regexp/no-dupe-characters-character-class
+    /[SyntaxError: Unexpected token (('o', "foo" is not valid JSON)|(o in JSON at position 1))]/,
+  )
+  expect(await extractDataFromResponse(new Response('foo'), 'json', true)).toBe(
+    'foo',
+  )
   expect(
     await extractDataFromResponse(new Response('{"foo":"bar"}'), 'json'),
   ).toEqual({ foo: 'bar' })
