@@ -1,5 +1,5 @@
 import {
-  Nilable,
+  Nullable,
   ResponseType,
   URLSearchParamsOptions,
   ValueOf,
@@ -22,7 +22,7 @@ export const cleanNilValues = <T = unknown>(input: T, empty?: boolean): T => {
 
   for (const _key of Object.keys(input)) {
     const key = _key as keyof T
-    const value = input[key] as Nilable<ValueOf<T>>
+    const value = input[key] as Nullable<ValueOf<T>>
     if (empty ? !value : value == null) {
       delete input[key]
     } else {

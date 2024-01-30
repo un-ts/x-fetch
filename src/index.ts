@@ -97,7 +97,8 @@ export const createFetchApi = (fetch = globalThis.fetch) => {
         return response
       }
       throw Object.assign(new Error(response.statusText), {
-        data: extractDataFromResponse(response, type, true),
+        data: await extractDataFromResponse(response, type, true),
+        request,
         response,
       })
     }
