@@ -1,6 +1,4 @@
-export type Nil = null | undefined | void
-
-export type Nilable<T> = Nil | T
+export type Nullable<T> = T | null | undefined
 
 export type Readonlyable<T> = Readonly<T> | T
 
@@ -22,7 +20,7 @@ export type URLSearchParamsInit = ConstructorParameters<
 >[0]
 
 export type URLSearchParamsOptions =
-  | Record<string, Nilable<Arrayable<number | string>>>
+  | Record<string, Nullable<Arrayable<number | string>>>
   | URLSearchParamsInit
   | object
 
@@ -61,5 +59,6 @@ export type ApiInterceptor = (
 
 export interface ResponseError<T = never> extends Error {
   data?: T | null
+  request: Request
   response?: Response | null
 }
