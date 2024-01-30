@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.2.2
+
+### Patch Changes
+
+- [#16](https://github.com/un-ts/x-fetch/pull/16) [`90b5813`](https://github.com/un-ts/x-fetch/commit/90b581321300592fe926b54bbe163cf4b2843a03) Thanks [@JounQin](https://github.com/JounQin)! - fix: should await data, add request into error
+
 ## 0.2.1
 
 ### Patch Changes
