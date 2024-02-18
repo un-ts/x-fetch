@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.2.3
+
+### Patch Changes
+
+- [#18](https://github.com/un-ts/x-fetch/pull/18) [`d4e3c48`](https://github.com/un-ts/x-fetch/commit/d4e3c487f20fe9925c9c6a20f659f5076fe6eb41) Thanks [@JounQin](https://github.com/JounQin)! - fix: allow more methods to use used
+
 ## 0.2.2
 
 ### Patch Changes
