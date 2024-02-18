@@ -24,12 +24,17 @@ export type URLSearchParamsOptions =
   | URLSearchParamsInit
   | object
 
+// https://www.rfc-editor.org/rfc/rfc9110#section-9.1-4
 export const ApiMethod = {
-  GET: 'GET',
-  POST: 'POST',
-  PATCH: 'PATCH',
-  PUT: 'PUT',
+  CONNECT: 'CONNECT',
   DELETE: 'DELETE',
+  GET: 'GET',
+  HEAD: 'HEAD',
+  OPTIONS: 'OPTIONS',
+  PATCH: 'PATCH',
+  POST: 'POST',
+  PUT: 'PUT',
+  TRACE: 'TRACE',
 } as const
 
 export type ApiMethod = ValueOf<typeof ApiMethod>
