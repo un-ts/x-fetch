@@ -3824,9 +3824,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mdx-js/rollup@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "@mdx-js/rollup@npm:3.0.0"
+"@mdx-js/rollup@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "@mdx-js/rollup@npm:3.1.0"
   dependencies:
     "@mdx-js/mdx": "npm:^3.0.0"
     "@rollup/pluginutils": "npm:^5.0.0"
@@ -3834,7 +3834,7 @@ __metadata:
     vfile: "npm:^6.0.0"
   peerDependencies:
     rollup: ">=2"
-  checksum: c2711669feb7b73712550c56d59281e4794d7ce58a75c3a19f31974b51c4a9f3e5faf35057bfb7277e77e90d21caf9078cf8cb55786c6ce7cdd2c03d4cd133f2
+  checksum: 6fb81a9ff7f12352000d753f586a1877b176b2159ba90f8d6ba7ef29c57fb7f57b9f3bce88c35176d68c41e6a0d0d20c629d8071473036136b89de89d19a112b
   languageName: node
   linkType: hard
 
@@ -21368,7 +21368,7 @@ __metadata:
     "@changesets/cli": "npm:^2.27.1"
     "@commitlint/cli": "npm:^18.4.4"
     "@edge-runtime/vm": "npm:^3.1.7"
-    "@mdx-js/rollup": "npm:^3.0.0"
+    "@mdx-js/rollup": "npm:^3.1.0"
     "@pkgr/rollup": "npm:^5.0.0"
     "@size-limit/preset-small-lib": "npm:^11.0.2"
     "@types/mdx": "npm:^2.0.10"
