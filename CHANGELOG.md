@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.2.4
+
+### Patch Changes
+
+- [`8861fbf`](https://github.com/un-ts/x-fetch/commit/8861fbf1eeb4c58258cba1a5c32638109d0f6a41) Thanks [@JounQin](https://github.com/JounQin)! - fix: incorrect typing for `cjs` entry
+
 ## 0.2.3
 
 ### Patch Changes
