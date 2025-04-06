@@ -16,7 +16,6 @@ export type ValueOf<T> = T[keyof T]
 
 export type URLSearchParamsInit = ConstructorParameters<
   typeof URLSearchParams
-  // eslint-disable-next-line @typescript-eslint/no-magic-numbers
 >[0]
 
 export type URLSearchParamsOptions =

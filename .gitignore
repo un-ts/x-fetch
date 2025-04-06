@@ -3,8 +3,8 @@
 .vercel
 .yarn/*
 !.yarn/plugins
+!.yarn/releases
 coverage
 dist
 lib
 node_modules
-/auto-imports.d.ts

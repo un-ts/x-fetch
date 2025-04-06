@@ -2,7 +2,8 @@
   "version": 2,
   "alias": [
     "ifetch.vercel.app",
-    "xfetch.vercel.app"
+    "xfetch.vercel.app",
+    "x-fetch.vercel.app"
   ],
   "github": {
     "silent": true

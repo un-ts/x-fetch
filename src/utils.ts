@@ -1,4 +1,4 @@
-import {
+import type {
   Nullable,
   ResponseType,
   URLSearchParamsOptions,
@@ -54,6 +54,7 @@ export const normalizeUrl = (url: string, query?: URLSearchParamsOptions) => {
     }
   }
   const search = searchParams.toString()
+  // eslint-disable-next-line sonarjs/no-nested-conditional
   return search ? url + (url.includes('?') ? '&' : '?') + search : url
 }
 
@@ -101,6 +102,7 @@ export async function extractDataFromResponse(
         data = await res.clone().text()
       } catch {}
       if (type === 'json') {
+        // eslint-disable-next-line sonarjs/no-nested-assignment
         if ((data = (data as string).trim())) {
           try {
             data = JSON.parse(data as string)

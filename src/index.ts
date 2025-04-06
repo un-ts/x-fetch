@@ -1,7 +1,7 @@
 import {
   ApiMethod,
-  FetchApiOptions,
-  InterceptorRequest,
+  type FetchApiOptions,
+  type InterceptorRequest,
   type ApiInterceptor,
   type FetchApiBaseOptions,
 } from './types.js'
@@ -33,7 +33,7 @@ export class ApiInterceptors {
 
   eject(interceptor: ApiInterceptor) {
     const index = this.#interceptors.indexOf(interceptor)
-    if (index > -1) {
+    if (index !== -1) {
       this.#interceptors.splice(index, 1)
       return true
     }

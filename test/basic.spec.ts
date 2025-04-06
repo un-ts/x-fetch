@@ -27,8 +27,7 @@ test('interceptors should just work', async () => {
     return next(req)
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  expect(() => fetchApi('/todos/1')).rejects.toMatchInlineSnapshot(
+  await expect(fetchApi('/todos/1')).rejects.toThrowErrorMatchingInlineSnapshot(
     '[TypeError: Failed to parse URL from /todos/1]',
   )
 
@@ -51,8 +50,7 @@ test('interceptors should just work', async () => {
   expect(interceptors.eject(interceptor)).toBe(true)
   expect(interceptors.eject(interceptor)).toBe(false)
 
-  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  expect(() => fetchApi('/todos/1')).rejects.toMatchInlineSnapshot(
+  await expect(fetchApi('/todos/1')).rejects.toThrowErrorMatchingInlineSnapshot(
     '[TypeError: Failed to parse URL from /todos/1]',
   )
 })
