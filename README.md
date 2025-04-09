@@ -13,7 +13,7 @@
 [![Code Style: Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 [![changesets](https://img.shields.io/badge/maintained%20with-changesets-176de3.svg)](https://github.com/changesets/changesets)
 
-A simple but elegant `fetch` API wrapper, use `fetch` like a charm
+A simple but elegant `fetch` API wrapper with less than `850B` minified and brotlied, use `fetch` like a charm
 
 ## TOC <!-- omit in toc -->
 
