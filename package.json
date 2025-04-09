@@ -2,7 +2,7 @@
   "name": "x-fetch",
   "version": "0.2.4",
   "type": "module",
-  "description": "A simple but elegant `fetch` API wrapper, use `fetch` like a charm",
+  "description": "A simple but elegant `fetch` API wrapper with less than `850B` minified and brotlied, use `fetch` like a charm",
   "repository": "git+https://github.com/un-ts/x-fetch.git",
   "author": "JounQin <admin@1stg.me> (https://www.1stG.me)",
   "funding": "https://opencollective.com/x-fetch",
@@ -58,9 +58,6 @@
     "test": "vitest run",
     "typecov": "type-coverage"
   },
-  "dependencies": {
-    "tslib": "^2.8.1"
-  },
   "devDependencies": {
     "@1stg/browserslist-config": "^2.1.2",
     "@1stg/common-config": "^12.0.0",
@@ -70,13 +67,13 @@
     "@commitlint/cli": "^19.8.0",
     "@edge-runtime/vm": "^5.0.0",
     "@mdx-js/rollup": "^3.1.0",
-    "@pkgr/rollup": "^6.0.1",
+    "@pkgr/rollup": "^6.0.2",
     "@shikijs/rehype": "^3.2.1",
     "@size-limit/preset-small-lib": "^11.2.0",
     "@types/mdx": "^2.0.13",
     "@types/node": "^22.14.0",
     "@types/react": "^19.1.0",
-    "@types/react-dom": "^19.1.1",
+    "@types/react-dom": "^19.1.2",
     "@types/web": "^0.0.216",
     "@vercel/analytics": "^1.5.0",
     "@vitejs/plugin-react-swc": "^3.8.1",
@@ -98,7 +95,7 @@
     "stylelint": "^16.18.0",
     "type-coverage": "^2.29.7",
     "typescript": "^5.8.3",
-    "vite": "^6.0.14",
+    "vite": "^6.2.5",
     "vitest": "^3.1.1",
     "yarn-berry-deduplicate": "^6.1.1"
   },
@@ -106,12 +103,6 @@
     "es5-ext": "npm:@unes/es5-ext@latest",
     "prettier": "^3.5.3"
   },
-  "size-limit": [
-    {
-      "path": "lib/index.js",
-      "limit": "1KB"
-    }
-  ],
   "typeCoverage": {
     "atLeast": 100,
     "cache": true,

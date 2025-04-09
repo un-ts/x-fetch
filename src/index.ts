@@ -16,25 +16,30 @@ export * from './types.js'
 export * from './utils.js'
 
 export class ApiInterceptors {
-  readonly #interceptors: ApiInterceptor[] = []
+  // @internal
+  declare private readonly _interceptors: ApiInterceptor[]
+
+  constructor() {
+    this._interceptors = []
+  }
 
   get length() {
-    return this.#interceptors.length
+    return this._interceptors.length
   }
 
   at(index: number) {
-    return this.#interceptors.at(index)
+    return this._interceptors.at(index)
   }
 
   use(...interceptors: ApiInterceptor[]) {
-    this.#interceptors.push(...interceptors)
+    this._interceptors.push(...interceptors)
     return this
   }
 
   eject(interceptor: ApiInterceptor) {
-    const index = this.#interceptors.indexOf(interceptor)
+    const index = this._interceptors.indexOf(interceptor)
     if (index !== -1) {
-      this.#interceptors.splice(index, 1)
+      this._interceptors.splice(index, 1)
       return true
     }
     return false
