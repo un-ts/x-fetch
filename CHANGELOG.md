@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.2.5
+
+### Patch Changes
+
+- [#28](https://github.com/un-ts/x-fetch/pull/28) [`33629f4`](https://github.com/un-ts/x-fetch/commit/33629f4539d575bee69bc6c5732909c894dcea13) Thanks [@JounQin](https://github.com/JounQin)! - fix: drop `tslib` dependency for smaller size, it's less than `850B` minified and brotlied now!
+
 ## 0.2.4
 
 ### Patch Changes
