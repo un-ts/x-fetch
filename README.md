@@ -30,26 +30,29 @@ A simple but elegant `fetch` API wrapper with less than `850B` minified and brot
 ### Install
 
 ```sh
-# pnpm
-pnpm add x-fetch
+# npm
+npm i x-fetch
 
 # yarn
 yarn add x-fetch
 
-# npm
-npm i x-fetch
+# pnpm
+pnpm add x-fetch
+
+# bun
+bun add x-fetch
 ```
 
 ### API
 
 ```ts
-import { ApiMethod, createFetchApi, fetchApi, interceptors } from 'x-fetch'
+import { ApiMethod, createXFetch, interceptors, xfetch } from 'x-fetch'
 
 // plain url, GET method
-await fetchApi('url')
+await xfetch('url')
 
 // with options, `method`, `body`, `query`, etc.
-await fetchApi('url', {
+await xfetch('url', {
   method: ApiMethod.POST, // or 'POST'
   // plain object or array, or BodyInit
   body: {},
@@ -74,8 +77,8 @@ interceptors.use(interceptor)
 // remove interceptor
 interceptors.eject(interceptor)
 
-// create a new isolated `fetchApi` with its own `interceptors`
-const { fetchApi, interceptors } = createFetchApi()
+// create a new isolated `xfetch` with its own `interceptors`
+const { xfetch, interceptors } = createXFetch()
 ```
 
 [![Sponsors](https://raw.githubusercontent.com/1stG/static/master/sponsors.svg)](https://github.com/sponsors/JounQin)

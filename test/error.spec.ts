@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers, @typescript-eslint/require-await */
 
-import { createFetchApi, ResponseError } from 'x-fetch'
+import { createXFetch, ResponseError } from 'x-fetch'
 
 const assertResponseError = <T>(err: unknown): ResponseError<T> => {
   if (!(err instanceof ResponseError)) {
@@ -14,17 +14,17 @@ test('throws ResponseError for 404 response', async () => {
   const mockFetch = async () =>
     new Response('Not Found', { status: 404, statusText: 'Not Found' })
 
-  // Create a custom fetchApi using our mock fetch
-  const { fetchApi } = createFetchApi(mockFetch)
+  // Create a custom xfetch using our mock fetch
+  const { xfetch } = createXFetch(mockFetch)
 
   // Test that it throws a ResponseError with the correct message
   await expect(
-    fetchApi('https://example.com/not-found'),
+    xfetch('https://example.com/not-found'),
   ).rejects.toThrowErrorMatchingInlineSnapshot(`[Error: Not Found]`)
 
   // Test with try/catch to inspect error properties
   try {
-    await fetchApi('https://example.com/not-found')
+    await xfetch('https://example.com/not-found')
   } catch (err) {
     expect(err).toBeInstanceOf(ResponseError)
     const error = assertResponseError<string>(err)
@@ -47,17 +47,17 @@ test('throws ResponseError with JSON data for 500 response', async () => {
       headers: { 'Content-Type': 'application/json' },
     })
 
-  // Create a custom fetchApi using our mock fetch
-  const { fetchApi } = createFetchApi(mockFetch)
+  // Create a custom xfetch using our mock fetch
+  const { xfetch } = createXFetch(mockFetch)
 
   // Test that it throws a ResponseError with the correct message
   await expect(
-    fetchApi('https://example.com/api'),
+    xfetch('https://example.com/api'),
   ).rejects.toThrowErrorMatchingInlineSnapshot(`[Error: Internal Server Error]`)
 
   // Test with try/catch to inspect error properties
   try {
-    await fetchApi('https://example.com/api')
+    await xfetch('https://example.com/api')
   } catch (err) {
     const error = assertResponseError<{ error: string; code: number }>(err)
     expect(error).toBeInstanceOf(ResponseError)
@@ -79,12 +79,12 @@ test('handles invalid JSON in error response', async () => {
       headers: { 'Content-Type': 'application/json' },
     })
 
-  // Create a custom fetchApi using our mock fetch
-  const { fetchApi } = createFetchApi(mockFetch)
+  // Create a custom xfetch using our mock fetch
+  const { xfetch } = createXFetch(mockFetch)
 
   // Test with try/catch to inspect error properties
   try {
-    await fetchApi('https://example.com/api')
+    await xfetch('https://example.com/api')
   } catch (err) {
     const error = assertResponseError<string>(err)
     expect(error).toBeInstanceOf(ResponseError)

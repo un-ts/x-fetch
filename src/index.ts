@@ -47,31 +47,31 @@ export class ApiInterceptors {
   }
 }
 
-export const createFetchApi = (fetch = globalThis.fetch) => {
+export const createXFetch = (fetch = globalThis.fetch) => {
   const interceptors = new ApiInterceptors()
 
-  function fetchApi(
+  function xfetch(
     url: string,
     options: FetchApiBaseOptions & { type: null },
   ): Promise<Response>
   // @ts-expect-error -- no idea, it sucks
-  function fetchApi(
+  function xfetch(
     url: string,
     options: FetchApiBaseOptions & { type: 'arraybuffer' },
   ): Promise<ArrayBuffer>
-  function fetchApi(
+  function xfetch(
     url: string,
     options: FetchApiBaseOptions & { type: 'blob' },
   ): Promise<Blob>
-  function fetchApi(
+  function xfetch(
     url: string,
     options: FetchApiBaseOptions & { type: 'text' },
   ): Promise<string>
-  function fetchApi<T>(
+  function xfetch<T>(
     url: string,
     options?: FetchApiBaseOptions & { type?: 'json' },
   ): Promise<T>
-  async function fetchApi(
+  async function xfetch(
     url: string,
     {
       method = ApiMethod.GET,
@@ -120,7 +120,20 @@ export const createFetchApi = (fetch = globalThis.fetch) => {
     return type == null ? response : extractDataFromResponse(response, type)
   }
 
-  return { interceptors, fetchApi }
+  return {
+    interceptors,
+    xfetch,
+    /**
+     * @deprecated Use {@link xfetch} instead.
+     */
+    fetchApi: xfetch,
+  }
 }
 
-export const { interceptors, fetchApi } = createFetchApi()
+/**
+ * @deprecated Use {@link createXFetch} instead.
+ */
+export const createFetchApi = createXFetch
+
+// eslint-disable-next-line sonarjs/deprecation
+export const { interceptors, xfetch, fetchApi } = createXFetch()

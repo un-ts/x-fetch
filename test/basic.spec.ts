@@ -1,8 +1,8 @@
-import { type ApiInterceptor, fetchApi, interceptors } from 'x-fetch'
+import { type ApiInterceptor, xfetch, interceptors } from 'x-fetch'
 
 test('it should just work', async () => {
   expect(
-    await fetchApi<{
+    await xfetch<{
       id: number
       userId: number
     }>('https://jsonplaceholder.typicode.com/todos/1'),
@@ -27,14 +27,14 @@ test('interceptors should just work', async () => {
     return next(req)
   }
 
-  await expect(fetchApi('/todos/1')).rejects.toThrowErrorMatchingInlineSnapshot(
+  await expect(xfetch('/todos/1')).rejects.toThrowErrorMatchingInlineSnapshot(
     '[TypeError: Failed to parse URL from /todos/1]',
   )
 
   interceptors.use(interceptor)
 
   expect(
-    await fetchApi<{
+    await xfetch<{
       id: number
       userId: number
     }>('todos/1'),
@@ -50,7 +50,7 @@ test('interceptors should just work', async () => {
   expect(interceptors.eject(interceptor)).toBe(true)
   expect(interceptors.eject(interceptor)).toBe(false)
 
-  await expect(fetchApi('/todos/1')).rejects.toThrowErrorMatchingInlineSnapshot(
+  await expect(xfetch('/todos/1')).rejects.toThrowErrorMatchingInlineSnapshot(
     '[TypeError: Failed to parse URL from /todos/1]',
   )
 })
