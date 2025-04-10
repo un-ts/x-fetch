@@ -68,6 +68,6 @@ export class ResponseError<T = never> extends Error {
     public response: Response,
     public data?: T | null,
   ) {
-    super(response.statusText)
+    super(response.statusText || String(response.status))
   }
 }
