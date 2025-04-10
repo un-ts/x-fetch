@@ -4,6 +4,7 @@ import {
   type InterceptorRequest,
   type ApiInterceptor,
   type FetchApiBaseOptions,
+  ResponseError,
 } from './types.js'
 import {
   CONTENT_TYPE,
@@ -101,11 +102,11 @@ export const createFetchApi = (fetch = globalThis.fetch) => {
       if (response.ok) {
         return response
       }
-      throw Object.assign(new Error(response.statusText), {
-        data: await extractDataFromResponse(response, type, true),
+      throw new ResponseError(
         request,
         response,
-      })
+        await extractDataFromResponse(response, type, true),
+      )
     }
 
     const response = await next({
