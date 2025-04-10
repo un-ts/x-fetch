@@ -1,5 +1,13 @@
 # Change Log
 
+## 0.2.6
+
+### Patch Changes
+
+- [#34](https://github.com/un-ts/x-fetch/pull/34) [`a933a8c`](https://github.com/un-ts/x-fetch/commit/a933a8c21209404d441910e6e2a88d6475388e1c) Thanks [@JounQin](https://github.com/JounQin)! - feat: rename `fetchApi` to `xfetch`
+
+- [#32](https://github.com/un-ts/x-fetch/pull/32) [`cbbccf5`](https://github.com/un-ts/x-fetch/commit/cbbccf5d590e496b0747a606abb1b05a0147277f) Thanks [@JounQin](https://github.com/JounQin)! - feat: change `ResponseError` as `class` instead
+
 ## 0.2.5
 
 ### Patch Changes
