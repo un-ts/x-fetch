@@ -2,11 +2,10 @@
 
 import { createXFetch, ResponseError } from 'x-fetch'
 
-const assertResponseError = <T>(err: unknown): ResponseError<T> => {
+function assertResponseError<T>(err: unknown): asserts err is ResponseError<T> {
   if (!(err instanceof ResponseError)) {
     throw new TypeError('Expected ResponseError')
   }
-  return err as ResponseError<T>
 }
 
 test('throws ResponseError for 404 response', async () => {
@@ -25,9 +24,9 @@ test('throws ResponseError for 404 response', async () => {
   // Test with try/catch to inspect error properties
   try {
     await xfetch('https://example.com/not-found')
-  } catch (err) {
-    expect(err).toBeInstanceOf(ResponseError)
-    const error = assertResponseError<string>(err)
+  } catch (error) {
+    expect(error).toBeInstanceOf(ResponseError)
+    assertResponseError<string>(error)
     expect(error.response.status).toBe(404)
     expect(error.message).toBe('Not Found')
     expect(error.request.url).toBe('https://example.com/not-found')
@@ -58,8 +57,8 @@ test('throws ResponseError with JSON data for 500 response', async () => {
   // Test with try/catch to inspect error properties
   try {
     await xfetch('https://example.com/api')
-  } catch (err) {
-    const error = assertResponseError<{ error: string; code: number }>(err)
+  } catch (error) {
+    assertResponseError<{ error: string; code: number }>(error)
     expect(error).toBeInstanceOf(ResponseError)
     expect(error.response.status).toBe(500)
     expect(error.message).toBe('Internal Server Error')
@@ -85,8 +84,8 @@ test('handles invalid JSON in error response', async () => {
   // Test with try/catch to inspect error properties
   try {
     await xfetch('https://example.com/api')
-  } catch (err) {
-    const error = assertResponseError<string>(err)
+  } catch (error) {
+    assertResponseError<string>(error)
     expect(error).toBeInstanceOf(ResponseError)
     expect(error.response.status).toBe(400)
     expect(error.message).toBe('Bad Request')
