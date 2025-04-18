@@ -1,2 +1,2 @@
 * text=auto eol=lf
-pnpm-lock.yaml -diff
+yarn.lock -diff
