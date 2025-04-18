@@ -20,8 +20,9 @@ A simple but elegant `fetch` API wrapper with less than `850B` minified and brot
 - [Usage](#usage)
   - [Install](#install)
   - [API](#api)
-- [Sponsors](#sponsors)
-- [Backers](#backers)
+- [Sponsors and Backers](#sponsors-and-backers)
+  - [Sponsors](#sponsors)
+  - [Backers](#backers)
 - [Changelog](#changelog)
 - [License](#license)
 
@@ -81,15 +82,17 @@ interceptors.eject(interceptor)
 const { xfetch, interceptors } = createXFetch()
 ```
 
-[![Sponsors](https://raw.githubusercontent.com/1stG/static/master/sponsors.svg)](https://github.com/sponsors/JounQin)
+## Sponsors and Backers
 
-## Sponsors
+[![Sponsors and Backers](https://raw.githubusercontent.com/1stG/static/master/sponsors.svg)](https://github.com/sponsors/JounQin)
+
+### Sponsors
 
 | 1stG                                                                                                                   | RxTS                                                                                                                   | UnTS                                                                                                                   |
 | ---------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | [![1stG Open Collective sponsors](https://opencollective.com/1stG/organizations.svg)](https://opencollective.com/1stG) | [![RxTS Open Collective sponsors](https://opencollective.com/rxts/organizations.svg)](https://opencollective.com/rxts) | [![UnTS Open Collective sponsors](https://opencollective.com/unts/organizations.svg)](https://opencollective.com/unts) |
 
-## Backers
+### Backers
 
 | 1stG                                                                                                                | RxTS                                                                                                                | UnTS                                                                                                                |
 | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
@@ -104,5 +107,5 @@ Detailed changes for each release are documented in [CHANGELOG.md](./CHANGELOG.m
 [MIT][] © [JounQin][]@[1stG.me][]
 
 [1stG.me]: https://www.1stG.me
-[JounQin]: https://GitHub.com/JounQin
+[JounQin]: https://github.com/JounQin
 [MIT]: http://opensource.org/licenses/MIT

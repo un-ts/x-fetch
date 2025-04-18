@@ -123,16 +123,12 @@ export const createXFetch = (fetch = globalThis.fetch) => {
   return {
     interceptors,
     xfetch,
-    /**
-     * @deprecated Use {@link xfetch} instead.
-     */
+    /** @deprecated Use {@link xfetch} instead. */
     fetchApi: xfetch,
   }
 }
 
-/**
- * @deprecated Use {@link createXFetch} instead.
- */
+/** @deprecated Use {@link createXFetch} instead. */
 export const createFetchApi = createXFetch
 
 // eslint-disable-next-line sonarjs/deprecation
