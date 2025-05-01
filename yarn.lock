@@ -4224,10 +4224,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/web@npm:^0.0.220":
-  version: 0.0.220
-  resolution: "@types/web@npm:0.0.220"
-  checksum: 10c0/75b85f1ea88ab63b19937e1c19a4dfff1efd22c63aa498d2319fe9e0a42e8ae7847689ed468148f819473fdce45270b4658e0ada3b1437c87daf44055985cc06
+"@types/web@npm:^0.0.228":
+  version: 0.0.228
+  resolution: "@types/web@npm:0.0.228"
+  checksum: 10c0/6597914cfa0ed85d76253618dd115b3766bff7c38c3056aebf5fc36694ef015bb1cbca2fae84f5e4bbcb92c420a624105f99ecf8f52889b4e0a054ece6a1ae4e
   languageName: node
   linkType: hard
 
@@ -15694,7 +15694,7 @@ __metadata:
     "@types/node": "npm:^22.14.1"
     "@types/react": "npm:^19.1.2"
     "@types/react-dom": "npm:^19.1.2"
-    "@types/web": "npm:^0.0.220"
+    "@types/web": "npm:^0.0.228"
     "@vercel/analytics": "npm:^1.5.0"
     "@vitejs/plugin-react-swc": "npm:^3.9.0"
     "@vitest/coverage-istanbul": "npm:^3.1.1"
