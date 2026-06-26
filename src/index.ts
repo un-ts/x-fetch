@@ -88,12 +88,14 @@ export const createXFetch = (fetch = globalThis.fetch) => {
       headers.append(CONTENT_TYPE, 'application/json')
     }
 
-    let index = 0
-
-    const next = async (request: InterceptorRequest) => {
-      if (index < interceptors.length) {
-        return interceptors.at(index++)!(request, next)
+    const dispatch = async (
+      i: number,
+      request: InterceptorRequest,
+    ): Promise<Response> => {
+      if (i < interceptors.length) {
+        return interceptors.at(i)!(request, r => dispatch(i + 1, r))
       }
+
       const { body, url, query, ...rest } = request
       const response = await fetch(normalizeUrl(url, query), {
         ...rest,
@@ -109,7 +111,7 @@ export const createXFetch = (fetch = globalThis.fetch) => {
       )
     }
 
-    const response = await next({
+    const response = await dispatch(0, {
       url,
       method,
       body,
