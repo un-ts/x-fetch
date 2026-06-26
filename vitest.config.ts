@@ -14,6 +14,7 @@ export default defineConfig({
       provider: 'istanbul',
       reporter: ['lcov', 'json', 'text'],
       include: ['src'],
+      exclude: ['**/*.json'],
     },
   },
 })

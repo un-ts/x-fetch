@@ -14,9 +14,9 @@ export type Arrayable<T, R extends boolean = false> = [R] extends [never]
 
 export type ValueOf<T> = T[keyof T]
 
-export type URLSearchParamsInit = ConstructorParameters<
-  typeof URLSearchParams
->[0]
+export type URLSearchParamsInit = NonNullable<
+  ConstructorParameters<typeof URLSearchParams>[0]
+>
 
 export type URLSearchParamsOptions =
   | Record<string, Nullable<Arrayable<number | string>>>
@@ -38,8 +38,10 @@ export const ApiMethod = {
 
 export type ApiMethod = ValueOf<typeof ApiMethod>
 
-export interface FetchApiBaseOptions
-  extends Omit<RequestInit, 'body' | 'method'> {
+export interface FetchApiBaseOptions extends Omit<
+  RequestInit,
+  'body' | 'method'
+> {
   method?: ApiMethod
   body?: BodyInit | object
   query?: URLSearchParamsOptions

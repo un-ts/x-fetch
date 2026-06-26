@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-magic-numbers, @typescript-eslint/require-await */
+/* eslint-disable @typescript-eslint/no-magic-numbers, @typescript-eslint/require-await, vitest/no-conditional-expect */
 
 import { createXFetch, ResponseError } from 'x-fetch'
 
