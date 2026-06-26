@@ -31,11 +31,11 @@ test('next() can be called multiple times for retry', async () => {
 })
 
 test('interceptor can modify request between retries', async () => {
-  const requests: string[] = []
+  const requests: Array<string | null> = []
 
   const mockFetch = (_url: RequestInfo | URL, init?: RequestInit) => {
     const auth = (init!.headers as Headers).get('Authorization')
-    requests.push(auth!)
+    requests.push(auth)
     if (!auth) {
       return Promise.resolve(new Response(null, { status: 401 }))
     }
@@ -59,7 +59,7 @@ test('interceptor can modify request between retries', async () => {
 
   const data = await xfetch<{ ok: boolean }>('https://example.com')
   expect(data).toEqual({ ok: true })
-  expect(requests).toEqual([null!, 'Bearer token'])
+  expect(requests).toEqual([null, 'Bearer token'])
 })
 
 test('multiple interceptors work correctly', async () => {
