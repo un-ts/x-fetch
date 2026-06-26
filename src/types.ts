@@ -61,7 +61,7 @@ export interface InterceptorRequest extends FetchApiOptions {
 
 export type ApiInterceptor = (
   request: InterceptorRequest,
-  next: (request: InterceptorRequest) => PromiseLike<Response>,
+  next: (request?: InterceptorRequest) => PromiseLike<Response>,
 ) => PromiseLike<Response> | Response
 
 export class ResponseError<T = never> extends Error {

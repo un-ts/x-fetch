@@ -15,11 +15,11 @@ test('next() can be called multiple times for retry', async () => {
 
   const { interceptors, xfetch } = createXFetch(mockFetch)
 
-  const retryInterceptor: ApiInterceptor = async (req, next) => {
+  const retryInterceptor: ApiInterceptor = async (_req, next) => {
     try {
-      return await next(req)
+      return await next()
     } catch {
-      return next(req)
+      return next()
     }
   }
 
@@ -48,10 +48,10 @@ test('interceptor can modify request between retries', async () => {
 
   const authRetryInterceptor: ApiInterceptor = async (req, next) => {
     try {
-      return await next(req)
+      return await next()
     } catch {
       req.headers.set('Authorization', 'Bearer token')
-      return next(req)
+      return next()
     }
   }
 
@@ -74,16 +74,16 @@ test('multiple interceptors work correctly', async () => {
 
   const { interceptors, xfetch } = createXFetch(mockFetch)
 
-  const a: ApiInterceptor = async (req, next) => {
+  const a: ApiInterceptor = async (_req, next) => {
     callOrder.push('a-in')
-    const res = await next(req)
+    const res = await next()
     callOrder.push('a-out')
     return res
   }
 
-  const b: ApiInterceptor = async (req, next) => {
+  const b: ApiInterceptor = async (_req, next) => {
     callOrder.push('b-in')
-    const res = await next(req)
+    const res = await next()
     callOrder.push('b-out')
     return res
   }
