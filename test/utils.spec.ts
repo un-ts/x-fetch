@@ -1,4 +1,4 @@
-/* eslint-disable unicorn/no-await-expression-member */
+/* eslint-disable unicorn-x/no-await-expression-member */
 
 import {
   cleanNilValues,

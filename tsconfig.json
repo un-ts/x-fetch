@@ -1,8 +1,10 @@
 {
   "extends": "@1stg/tsconfig/node16",
   "compilerOptions": {
+    "jsx": "react-jsx",
     "paths": {
       "x-fetch": ["./src/index.ts"]
-    }
+    },
+    "types": ["mdx", "react", "react-dom", "web"]
   }
 }
