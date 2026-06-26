@@ -1,5 +1,13 @@
 # Change Log
 
+## 0.2.7
+
+### Patch Changes
+
+- [#45](https://github.com/un-ts/x-fetch/pull/45) [`d4c833d`](https://github.com/un-ts/x-fetch/commit/d4c833d0ad30c2955332449dabc73ba26445cc74) Thanks [@JounQin](https://github.com/JounQin)! - fix: allow `next()` to be called multiple times for request retry
+
+- [#48](https://github.com/un-ts/x-fetch/pull/48) [`2e005ce`](https://github.com/un-ts/x-fetch/commit/2e005ce6623c209290b5468dfe17d26570fa7c91) Thanks [@JounQin](https://github.com/JounQin)! - Make `next()`'s `request` optional, defaults to the previous request when omitted.
+
 ## 0.2.6
 
 ### Patch Changes
