@@ -93,7 +93,7 @@ export const createXFetch = (fetch = globalThis.fetch) => {
       request: InterceptorRequest,
     ): Promise<Response> => {
       if (i < interceptors.length) {
-        return interceptors.at(i)!(request, r => dispatch(i + 1, r))
+        return interceptors.at(i)!(request, r => dispatch(i + 1, r ?? request))
       }
 
       const { body, url, query, ...rest } = request
