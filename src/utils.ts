@@ -89,7 +89,7 @@ export async function extractDataFromResponse(
     } catch {}
     if (type === 'json') {
       // eslint-disable-next-line sonarjs/no-nested-assignment
-      if ((data = (data as string).trim())) {
+      if ((data = (data as string | undefined)?.trim())) {
         try {
           data = JSON.parse(data as string)
         } catch (err) {
@@ -114,7 +114,7 @@ export async function extractDataFromResponse(
   return data
 }
 
-const brand = Symbol.for('x-fetch.error')
+const brand = Symbol.for('x-fetch')
 
 export class XFetchError<T = never> extends Error {
   response?: Response

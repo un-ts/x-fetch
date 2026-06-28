@@ -1,10 +1,12 @@
-/* eslint-disable @typescript-eslint/no-magic-numbers, @typescript-eslint/require-await */
+/* eslint-disable @typescript-eslint/no-magic-numbers, @typescript-eslint/require-await, vitest/no-conditional-expect */
 
 import {
   createXFetch,
-  type XFetchMiddleware,
-  xfetch,
+  isXFetchError,
   middlewares,
+  xfetch,
+  type Nullable,
+  type XFetchMiddleware,
 } from 'x-fetch'
 
 test('it should just work', async () => {
@@ -82,18 +84,23 @@ test('XFetchError on malformed JSON response', async () => {
 
   const { xfetch } = createXFetch(mockFetch)
 
-  await expect(
-    xfetch('https://example.com'),
-  ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `[Error: Unexpected token 'o', "not-json" is not valid JSON]`,
-  )
+  try {
+    await xfetch('https://example.com')
+  } catch (error) {
+    if (!isXFetchError(error)) {
+      throw error
+    }
+    expect(error.response).toBeDefined()
+    expect(error.response!.status).toBe(200)
+    expect(error.cause).toBeInstanceOf(SyntaxError)
+  }
 })
 
 test('auto JSON-stringifies plain object body', async () => {
-  let body: BodyInit | null = null
+  let body: Nullable<BodyInit>
 
   const mockFetch = async (_url: RequestInfo | URL, init?: RequestInit) => {
-    body = init!.body!
+    body = init?.body
     return new Response(JSON.stringify({ ok: true }), { status: 200 })
   }
 
@@ -108,10 +115,10 @@ test('auto JSON-stringifies plain object body', async () => {
 })
 
 test('with json: false does not stringify body', async () => {
-  let body: BodyInit | null = null
+  let body: Nullable<BodyInit>
 
   const mockFetch = async (_url: RequestInfo | URL, init?: RequestInit) => {
-    body = init!.body!
+    body = init?.body
     return new Response(JSON.stringify({ ok: true }), { status: 200 })
   }
 
@@ -128,9 +135,11 @@ test('with json: false does not stringify body', async () => {
 
 test('auto JSON-stringifies array body', async () => {
   let contentType = ''
+  let body: Nullable<BodyInit>
 
   const mockFetch = async (_url: RequestInfo | URL, init?: RequestInit) => {
     contentType = (init!.headers as Headers).get('Content-Type')!
+    body = init?.body
     return new Response(JSON.stringify({ ok: true }), { status: 200 })
   }
 
@@ -142,4 +151,5 @@ test('auto JSON-stringifies array body', async () => {
   })
 
   expect(contentType).toBe('application/json')
+  expect(body).toBe('["a","b"]')
 })

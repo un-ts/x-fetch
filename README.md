@@ -54,6 +54,7 @@ import {
   isXFetchError,
   xfetch,
   middlewares,
+  type XFetchMiddleware,
 } from 'x-fetch'
 
 // plain url, GET method, returns JSON
@@ -151,16 +152,19 @@ const trackProgress = (
     start(controller) {
       let loaded = 0
       function pump() {
-        reader.read().then(({ done, value }) => {
-          if (done) {
-            controller.close()
-            return
-          }
-          loaded += value!.length
-          onProgress(loaded, total)
-          controller.enqueue(value!)
-          pump()
-        })
+        reader.read().then(
+          ({ done, value }) => {
+            if (done) {
+              controller.close()
+              return
+            }
+            loaded += value!.length
+            onProgress(loaded, total)
+            controller.enqueue(value!)
+            pump()
+          },
+          err => controller.error(err),
+        )
       }
       pump()
     },

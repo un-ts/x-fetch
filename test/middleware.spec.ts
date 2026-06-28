@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/require-await, sonarjs/no-identical-functions */
+/* eslint-disable @typescript-eslint/require-await, sonarjs/no-identical-functions, vitest/no-conditional-expect */
 
-import { createXFetch, type XFetchMiddleware } from 'x-fetch'
+import { createXFetch, isXFetchError, type XFetchMiddleware } from 'x-fetch'
 
 const mockOk = () =>
   Promise.resolve(new Response(JSON.stringify({ ok: true }), { status: 200 }))
@@ -117,7 +117,10 @@ test('middleware catches XFetchError from next()', async () => {
   const fallback: XFetchMiddleware = async (_ctx, next) => {
     try {
       return await next()
-    } catch {
+    } catch (error) {
+      if (!isXFetchError(error)) {
+        throw error
+      }
       return new Response('{"ok":false}', { status: 200 })
     }
   }
@@ -173,9 +176,16 @@ test('XFetchError wraps network failure', async () => {
 
   const { xfetch } = createXFetch(mockFetch)
 
-  await expect(
-    xfetch('https://example.com'),
-  ).rejects.toThrowErrorMatchingInlineSnapshot(`[Error: fetch failed]`)
+  try {
+    await xfetch('https://example.com')
+  } catch (error) {
+    if (!isXFetchError(error)) {
+      throw error
+    }
+    expect(error.context.url).toBe('https://example.com')
+    expect(error.cause).toBeInstanceOf(TypeError)
+    expect(error.message).toBe('fetch failed')
+  }
 })
 
 test('multiple middlewares work correctly', async () => {
