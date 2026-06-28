@@ -86,7 +86,7 @@ const middleware: XFetchMiddleware = async (ctx, next) => {
 middlewares.use(middleware)
 middlewares.eject(middleware)
 
-// per-call — merged with global middlewares
+// per-call — merged with global middlewares (global → per-call → fetch)
 await xfetch('url', { middlewares: [middleware] })
 
 // --- Common recipes ---
@@ -134,7 +134,125 @@ const withCache: XFetchMiddleware = async (ctx, next) => {
   return res
 }
 
-// --- Error handling ---
+// Upload / download progress — extend context with custom callbacks
+declare module 'x-fetch' {
+  interface XFetchMiddlewareContext {
+    onUploadProgress?: (loaded: number, total: number) => void
+    onDownloadProgress?: (loaded: number, total: number) => void
+  }
+}
+
+const trackProgress = (
+  reader: ReadableStreamDefaultReader<Uint8Array>,
+  total: number,
+  onProgress: (loaded: number, total: number) => void,
+) =>
+  new ReadableStream({
+    start(controller) {
+      let loaded = 0
+      function pump() {
+        reader.read().then(({ done, value }) => {
+          if (done) {
+            controller.close()
+            return
+          }
+          loaded += value!.length
+          onProgress(loaded, total)
+          controller.enqueue(value!)
+          pump()
+        })
+      }
+      pump()
+    },
+  })
+
+const withUploadProgress: XFetchMiddleware = async (ctx, next) => {
+  if (ctx.onUploadProgress && ctx.body instanceof ReadableStream) {
+    const total = Number(ctx.headers.get('Content-Length') || 0)
+    ctx.body = trackProgress(ctx.body.getReader(), total, ctx.onUploadProgress)
+  }
+  return next()
+}
+
+const withDownloadProgress: XFetchMiddleware = async (ctx, next) => {
+  if (!ctx.onDownloadProgress) {
+    return next()
+  }
+  const res = await next()
+  const reader = res.clone().body?.getReader()
+  if (!reader) {
+    return res
+  }
+  const total = Number(res.headers.get('Content-Length') || 0)
+  return new Response(trackProgress(reader, total, ctx.onDownloadProgress), res)
+}
+
+await xfetch('/api', {
+  onUploadProgress: (loaded, total) => console.log(`↑ ${loaded}/${total}`),
+  middlewares: [withUploadProgress],
+})
+
+// XHR-based fetch — native progress via init callbacks
+declare global {
+  interface RequestInit {
+    onUploadProgress?: (loaded: number, total: number) => void
+    onDownloadProgress?: (loaded: number, total: number) => void
+  }
+}
+
+const xhrFetch: typeof fetch = (input, init) =>
+  new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest()
+    const url = input instanceof Request ? input.url : String(input)
+    xhr.open(init?.method || 'GET', url)
+    new Headers(init?.headers).forEach((v, k) => xhr.setRequestHeader(k, v))
+    const { onUploadProgress, onDownloadProgress, signal, ...rest } = init || {}
+    xhr.upload.onprogress = e => onUploadProgress?.(e.loaded, e.total)
+    xhr.onprogress = e => onDownloadProgress?.(e.loaded, e.total)
+    signal?.addEventListener('abort', () => xhr.abort())
+    xhr.onload = () =>
+      resolve(
+        new Response(xhr.response, {
+          status: xhr.status,
+          statusText: xhr.statusText,
+        }),
+      )
+    xhr.onerror = () => reject(new Error('XHR failed'))
+    xhr.send((rest as RequestInit).body as XMLHttpRequestBodyInit)
+  })
+
+const { xfetch } = createXFetch(xhrFetch)
+
+await xfetch('/file', {
+  onUploadProgress: (loaded, total) => console.log(`↑ ${loaded}/${total}`),
+  onDownloadProgress: (loaded, total) => console.log(`↓ ${loaded}/${total}`),
+})
+
+// or — middleware that bypasses next() for native XHR progress events
+const withXhrProgress: XFetchMiddleware = (ctx, next) =>
+  !ctx.onUploadProgress && !ctx.onDownloadProgress
+    ? next()
+    : new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest()
+        xhr.open(ctx.method, ctx.url)
+        ctx.headers.forEach((v, k) => xhr.setRequestHeader(k, v))
+        xhr.upload.onprogress = e => ctx.onUploadProgress?.(e.loaded, e.total)
+        xhr.onprogress = e => ctx.onDownloadProgress?.(e.loaded, e.total)
+        xhr.onload = () =>
+          resolve(
+            new Response(xhr.response, {
+              status: xhr.status,
+              statusText: xhr.statusText,
+            }),
+          )
+        xhr.onerror = () => reject(new Error('XHR failed'))
+        xhr.send(ctx.body as XMLHttpRequestBodyInit)
+      })
+
+await xfetch('/upload', {
+  onUploadProgress: (loaded, total) => console.log(`${loaded}/${total}`),
+  middlewares: [retry, withXhrProgress], // withXhrProgress last — innermost
+})
 
 // next() always throws XFetchError, inspect and handle in middleware
 const withFallback: XFetchMiddleware = async (ctx, next) => {
@@ -210,8 +328,9 @@ const api = $fetch.create({ baseURL: 'https://api.example.com' })
 
 // x-fetch
 await xfetch('/users', { query: { page: 1 } })
-const { xfetch: api, middlewares } = createXFetch()
-middlewares.use(withBaseUrl) // ctx.url = new URL(ctx.url, 'https://api.example.com').href
+const { xfetch, middlewares } = createXFetch()
+middlewares.use(withBaseUrl)
+await xfetch('/users', { query: { page: 1 } })
 ```
 
 | ofetch                               | x-fetch                        |

@@ -35,10 +35,9 @@ export const createXFetch = (fetch = globalThis.fetch) => {
     url: string,
     options: XFetchBaseOptions & { type: null },
   ): Promise<Response>
-  // @ts-expect-error -- no idea, it sucks
   function xfetch(
     url: string,
-    options: XFetchBaseOptions & { type: 'arraybuffer' },
+    options: XFetchBaseOptions & { type: 'arrayBuffer' },
   ): Promise<ArrayBuffer>
   function xfetch(
     url: string,
