@@ -1,8 +1,7 @@
 import type {
-  Nullable,
+  XFetchMiddlewareContext,
   ResponseType,
   URLSearchParamsOptions,
-  ValueOf,
 } from './types.js'
 
 export const CONTENT_TYPE = 'Content-Type'
@@ -10,50 +9,35 @@ export const CONTENT_TYPE = 'Content-Type'
 // eslint-disable-next-line @typescript-eslint/unbound-method
 const { toString } = Object.prototype // type-coverage:ignore-line -- https://github.com/plantain-00/type-coverage/issues/133
 
-const objectTag = '[object Object]'
-
 export const isPlainObject = <T extends object>(value: unknown): value is T =>
-  toString.call(value) === objectTag
+  toString.call(value) === '[object Object]'
 
-export const cleanNilValues = <T = unknown>(input: T, empty?: boolean): T => {
-  if (!isPlainObject(input)) {
-    return input
-  }
-
-  for (const _key of Object.keys(input)) {
-    const key = _key as keyof T
-    const value = input[key] as Nullable<ValueOf<T>>
-    if (empty ? !value : value == null) {
-      delete input[key]
-    } else {
-      input[key] = cleanNilValues(value, empty) as (T & object)[keyof T]
-    }
-  }
-
-  return input
-}
-
+// eslint-disable-next-line sonarjs/cognitive-complexity
 export const normalizeUrl = (url: string, query?: URLSearchParamsOptions) => {
-  const cleanedQuery = cleanNilValues(query, true)
-  const searchParams = new URLSearchParams()
-  if (isPlainObject(cleanedQuery)) {
-    for (const [
-      key,
-      // type-coverage:ignore-next-line -- cannot control
-      _value,
-    ] of Object.entries(cleanedQuery)) {
-      const value = _value as unknown
+  let searchParams: URLSearchParams
+
+  if (isPlainObject(query)) {
+    searchParams = new URLSearchParams()
+    for (const [key, value] of Object.entries(query) as Array<
+      [string, unknown]
+    >) {
       if (Array.isArray(value)) {
-        const items = value as unknown[]
-        for (const item of items) {
-          searchParams.append(key, String(item))
+        for (const item of value as unknown[]) {
+          if (item != null && item !== '') {
+            // eslint-disable-next-line @typescript-eslint/no-base-to-string
+            searchParams.append(key, String(item))
+          }
         }
-      } else {
+      } else if (value != null && value !== '') {
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string
         searchParams.set(key, String(value))
       }
     }
+  } else {
+    searchParams = new URLSearchParams(query)
   }
-  const search = searchParams.toString()
+
+  const search = String(searchParams)
   // eslint-disable-next-line sonarjs/no-nested-conditional
   return search ? url + (url.includes('?') ? '&' : '?') + search : url
 }
@@ -94,37 +78,67 @@ export async function extractDataFromResponse(
   type: ResponseType,
   fallback?: boolean,
 ) {
+  if (type == null) {
+    return
+  }
   let data: unknown
-  if (type != null) {
-    if (type === 'json' || type === 'text') {
-      try {
-        // data could be empty text
-        data = await res.clone().text()
-      } catch {}
-      if (type === 'json') {
-        // eslint-disable-next-line sonarjs/no-nested-assignment
-        if ((data = (data as string).trim())) {
-          try {
-            data = JSON.parse(data as string)
-          } catch (err) {
-            if (!fallback) {
-              throw err
-            }
+  if (type === 'json' || type === 'text') {
+    try {
+      // data could be empty text
+      data = await res.clone().text()
+    } catch {}
+    if (type === 'json') {
+      // eslint-disable-next-line sonarjs/no-nested-assignment
+      if ((data = (data as string).trim())) {
+        try {
+          data = JSON.parse(data as string)
+        } catch (err) {
+          if (!fallback) {
+            throw err
           }
-        } else {
-          data = null
         }
+      } else {
+        data = null
       }
-    } else {
-      try {
-        data = await res.clone()[type]()
-      } catch (err) {
-        if (!fallback) {
-          throw err
-        }
-        data = await res.clone().text()
+    }
+  } else {
+    try {
+      data = await res.clone()[type]()
+    } catch (err) {
+      if (!fallback) {
+        throw err
       }
+      data = await res.clone().text()
     }
   }
   return data
 }
+
+const brand = Symbol.for('x-fetch.error')
+
+export class XFetchError<T = never> extends Error {
+  response?: Response
+  data?: T | null
+
+  constructor(
+    public context: XFetchMiddlewareContext,
+    {
+      response,
+      data,
+      cause,
+    }: { response?: Response; data?: T | null; cause?: unknown },
+  ) {
+    super(
+      (cause as Error | undefined)?.message ||
+        (response && (response.statusText || response.status + '')),
+      { cause },
+    )
+    this.response = response
+    this.data = data
+  }
+}
+
+Object.defineProperty(XFetchError.prototype, brand, { value: true })
+
+export const isXFetchError = <T>(error: unknown): error is XFetchError<T> =>
+  error != null && typeof error === 'object' && brand in error

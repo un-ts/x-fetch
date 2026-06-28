@@ -2,7 +2,7 @@
   "name": "x-fetch",
   "version": "0.2.7",
   "type": "module",
-  "description": "A simple but elegant `fetch` API wrapper with less than `880B` minified and brotlied, use `fetch` like a charm",
+  "description": "A simple but elegant `fetch` API wrapper with less than `840B` minified and brotlied, use `fetch` like a charm",
   "repository": "git+https://github.com/un-ts/x-fetch.git",
   "author": "JounQin <admin@1stg.me> (https://www.1stG.me)",
   "funding": "https://opencollective.com/x-fetch",
@@ -109,6 +109,7 @@
     "ignoreFiles": [
       "**/*.d.ts"
     ],
+    "ignoreNested": true,
     "ignoreNonNullAssertion": true,
     "showRelativePath": true,
     "strict": true,

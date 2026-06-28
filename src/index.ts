@@ -1,86 +1,67 @@
-import {
-  ApiMethod,
-  type FetchApiOptions,
-  type InterceptorRequest,
-  type ApiInterceptor,
-  type FetchApiBaseOptions,
-  ResponseError,
+import type {
+  XFetchBaseOptions,
+  XFetchMiddleware,
+  XFetchMiddlewareContext,
+  XFetchOptions,
 } from './types.js'
 import {
   CONTENT_TYPE,
   extractDataFromResponse,
   isPlainObject,
+  isXFetchError,
   normalizeUrl,
+  XFetchError,
 } from './utils.js'
 
-export * from './types.js'
+export type * from './types.js'
 export * from './utils.js'
 
-export class ApiInterceptors {
-  // @internal
-  declare private readonly _interceptors: ApiInterceptor[]
-
-  constructor() {
-    this._interceptors = []
-  }
-
-  get length() {
-    return this._interceptors.length
-  }
-
-  at(index: number) {
-    return this._interceptors.at(index)
-  }
-
-  use(...interceptors: ApiInterceptor[]) {
-    this._interceptors.push(...interceptors)
-    return this
-  }
-
-  eject(interceptor: ApiInterceptor) {
-    const index = this._interceptors.indexOf(interceptor)
-    if (index !== -1) {
-      this._interceptors.splice(index, 1)
-      return true
-    }
-    return false
-  }
-}
-
 export const createXFetch = (fetch = globalThis.fetch) => {
-  const interceptors = new ApiInterceptors()
+  const middlewares_ = new Set<XFetchMiddleware>()
+
+  const middlewares = {
+    use(...middlewares: XFetchMiddleware[]) {
+      for (const middleware of middlewares) {
+        middlewares_.add(middleware)
+      }
+      return this
+    },
+    eject(middleware: XFetchMiddleware) {
+      return middlewares_.delete(middleware)
+    },
+  }
 
   function xfetch(
     url: string,
-    options: FetchApiBaseOptions & { type: null },
+    options: XFetchBaseOptions & { type: null },
   ): Promise<Response>
   // @ts-expect-error -- no idea, it sucks
   function xfetch(
     url: string,
-    options: FetchApiBaseOptions & { type: 'arraybuffer' },
+    options: XFetchBaseOptions & { type: 'arraybuffer' },
   ): Promise<ArrayBuffer>
   function xfetch(
     url: string,
-    options: FetchApiBaseOptions & { type: 'blob' },
+    options: XFetchBaseOptions & { type: 'blob' },
   ): Promise<Blob>
   function xfetch(
     url: string,
-    options: FetchApiBaseOptions & { type: 'text' },
+    options: XFetchBaseOptions & { type: 'text' },
   ): Promise<string>
   function xfetch<T>(
     url: string,
-    options?: FetchApiBaseOptions & { type?: 'json' },
+    options?: XFetchBaseOptions & { type?: 'json' },
   ): Promise<T>
   async function xfetch(
     url: string,
     {
-      method = ApiMethod.GET,
+      method = 'GET',
       body,
       headers,
       json = body != null && (isPlainObject(body) || Array.isArray(body)),
       type = 'json',
       ...rest
-    }: FetchApiOptions = {},
+    }: XFetchOptions = {},
   ) {
     headers = new Headers(headers)
 
@@ -88,50 +69,63 @@ export const createXFetch = (fetch = globalThis.fetch) => {
       headers.append(CONTENT_TYPE, 'application/json')
     }
 
-    const dispatch = async (
-      i: number,
-      request: InterceptorRequest,
-    ): Promise<Response> => {
-      if (i < interceptors.length) {
-        return interceptors.at(i)!(request, r => dispatch(i + 1, r ?? request))
-      }
-
-      const { body, url, query, ...rest } = request
-      const response = await fetch(normalizeUrl(url, query), {
-        ...rest,
-        body: json ? JSON.stringify(body) : (body as BodyInit),
-      })
-      if (response.ok) {
-        return response
-      }
-      throw new ResponseError(
-        request,
-        response,
-        await extractDataFromResponse(response, type, true),
-      )
-    }
-
-    const response = await dispatch(0, {
+    let context: XFetchMiddlewareContext = {
       url,
       method,
       body,
       headers,
       ...rest,
-    })
+    }
 
-    return type == null ? response : extractDataFromResponse(response, type)
+    const allMiddlewares = [...middlewares_, ...(context.middlewares ?? [])]
+
+    const dispatch = async (
+      i: number,
+      ctx: XFetchMiddlewareContext,
+    ): Promise<Response> => {
+      try {
+        if (i < allMiddlewares.length) {
+          return await allMiddlewares[i](ctx, c => dispatch(i + 1, c ?? ctx))
+        }
+
+        const { body, url, query, ...rest } = (context = ctx)
+        const response = await fetch(normalizeUrl(url, query), {
+          ...rest,
+          body: json ? JSON.stringify(body) : (body as BodyInit),
+        })
+        if (response.ok) {
+          return response
+        }
+        throw new XFetchError(ctx, {
+          response,
+          data: await extractDataFromResponse(response, type, true),
+        })
+      } catch (error) {
+        if (isXFetchError(error)) {
+          throw error
+        }
+        throw new XFetchError(ctx, { cause: error })
+      }
+    }
+
+    const response = await dispatch(0, context)
+
+    if (type == null) {
+      return response
+    }
+
+    try {
+      return await extractDataFromResponse(response, type)
+    } catch (error) {
+      throw new XFetchError(context, {
+        cause: error,
+        response,
+        data: await extractDataFromResponse(response, type, true),
+      })
+    }
   }
 
-  return {
-    interceptors,
-    xfetch,
-    /** @deprecated Use {@link xfetch} instead. */
-    fetchApi: xfetch,
-  }
+  return { middlewares, xfetch }
 }
 
-/** @deprecated Use {@link createXFetch} instead. */
-export const createFetchApi = createXFetch
-
-// eslint-disable-next-line sonarjs/deprecation
-export const { interceptors, xfetch, fetchApi } = createXFetch()
+export const { middlewares, xfetch } = createXFetch()

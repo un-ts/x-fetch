@@ -13,13 +13,14 @@
 [![Code Style: Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 [![changesets](https://img.shields.io/badge/maintained%20with-changesets-176de3.svg)](https://github.com/changesets/changesets)
 
-A simple but elegant `fetch` API wrapper with less than `850B` minified and brotlied, use `fetch` like a charm
+A simple but elegant `fetch` API wrapper with less than `840B` minified and brotlied, use `fetch` like a charm
 
 ## TOC <!-- omit in toc -->
 
 - [Usage](#usage)
   - [Install](#install)
   - [API](#api)
+  - [Migration Guides](#migration-guides)
 - [Sponsors and Backers](#sponsors-and-backers)
   - [Sponsors](#sponsors)
   - [Backers](#backers)
@@ -47,40 +48,178 @@ bun add x-fetch
 ### API
 
 ```ts
-import { ApiMethod, createXFetch, interceptors, xfetch } from 'x-fetch'
+import {
+  HttpMethod,
+  createXFetch,
+  isXFetchError,
+  xfetch,
+  middlewares,
+} from 'x-fetch'
 
-// plain url, GET method
+// plain url, GET method, returns JSON
 await xfetch('url')
 
-// with options, `method`, `body`, `query`, etc.
+// with options — method, body, query, headers, etc.
 await xfetch('url', {
-  method: ApiMethod.POST, // or 'POST'
-  // plain object or array, or BodyInit
+  method: HttpMethod.POST, // or 'POST'
+  // plain object or array (auto JSON-stringified), or BodyInit
   body: {},
-  // URLSearchParametersOptions
+  // URLSearchParams-compatible query object
   query: {
     key: 'value',
   },
-  // json: boolean, // whether auto stringify body to json, default true for plain object or array, otherwise false
-  // type: 'arrayBuffer' | 'blob' | 'json' | 'text' | null, `null` means plain `Response`
+  // json: true, // auto (default for plain objects/arrays), set false to disable
+  // type: 'arrayBuffer' | 'blob' | 'json' | 'text' | null, // defaults to 'json'
 })
 
-const interceptor: ApiInterceptor = (req, next) => {
-  // do something with req
-  const res = await next(req)
-  // do something with res
+// --- Middlewares ---
+
+const middleware: XFetchMiddleware = async (ctx, next) => {
+  // mutate ctx before the request
+  ctx.headers.set('Authorization', 'Bearer token')
+  const res = await next() // same as next(ctx)
+  // mutate / inspect the response
   return res
 }
 
-// add interceptor
-interceptors.use(interceptor)
+// global — applies to all xfetch calls
+middlewares.use(middleware)
+middlewares.eject(middleware)
 
-// remove interceptor
-interceptors.eject(interceptor)
+// per-call — merged with global middlewares
+await xfetch('url', { middlewares: [middleware] })
 
-// create a new isolated `xfetch` with its own `interceptors`
-const { xfetch, interceptors } = createXFetch()
+// --- Common recipes ---
+
+// Base URL
+const withBaseUrl: XFetchMiddleware = async (ctx, next) => {
+  ctx.url = new URL(ctx.url, 'https://api.example.com').href
+  return next()
+}
+
+// Retry
+const retry: XFetchMiddleware = async (ctx, next) => {
+  try {
+    return await next()
+  } catch {
+    return next() // reuses ctx, mutations from failed attempt persist
+  }
+}
+
+// Retry with snapshot — restore original context on retry
+const retryWithSnapshot: XFetchMiddleware = async (ctx, next) => {
+  const snapshot = { ...ctx, headers: new Headers(ctx.headers) }
+  try {
+    return await next()
+  } catch {
+    return next(snapshot) // fresh context, no leaked mutations
+  }
+}
+
+// Timeout
+const withTimeout: XFetchMiddleware = async (ctx, next) => {
+  ctx.signal = AbortSignal.timeout(5000)
+  return next()
+}
+
+// Cache
+const cache = new Map<string, Response>()
+const withCache: XFetchMiddleware = async (ctx, next) => {
+  const key = ctx.url
+  if (cache.has(key)) {
+    return cache.get(key)!.clone()
+  }
+  const res = await next()
+  cache.set(key, res.clone())
+  return res
+}
+
+// --- Error handling ---
+
+// next() always throws XFetchError, inspect and handle in middleware
+const withFallback: XFetchMiddleware = async (ctx, next) => {
+  try {
+    return await next()
+  } catch (error) {
+    if (isXFetchError(error) && error.response?.status === 404) {
+      return new Response('{"error":"not found"}', { status: 200 })
+    }
+    throw error
+  }
+}
+
+// call site — non-HTTP errors are also wrapped as XFetchError
+try {
+  await xfetch('url')
+} catch (error) {
+  if (isXFetchError(error)) {
+    console.error(error.message, error.response?.status, error.data)
+  }
+}
+
+// --- Isolated instance ---
+
+const { xfetch, middlewares } = createXFetch() // or createXFetch(customFetch)
 ```
+
+### Migration Guides
+
+#### From axios
+
+```ts
+// axios
+const { data } = await axios.get('/users', { params: { page: 1 } })
+await axios.post('/users', { name: 'John' })
+
+// x-fetch
+const data = await xfetch('/users?page=1')
+await xfetch('/users', { method: 'POST', body: { name: 'John' } })
+```
+
+| axios                               | x-fetch                        |
+| ----------------------------------- | ------------------------------ |
+| `axios.create({ baseURL })`         | `middlewares.use(withBaseUrl)` |
+| `axios.interceptors.request.use()`  | `middlewares.use()`            |
+| `axios.interceptors.response.use()` | `middlewares.use()`            |
+| `error.response?.status`            | `error.response?.status`       |
+
+#### From ky
+
+```ts
+// ky
+await ky.get('/users', { searchParams: { page: 1 } }).json()
+await ky.post('/users', { json: { name: 'John' } })
+
+// x-fetch
+await xfetch('/users', { query: { page: 1 } })
+await xfetch('/users', { method: 'POST', body: { name: 'John' } })
+```
+
+| ky                         | x-fetch                                   |
+| -------------------------- | ----------------------------------------- |
+| `ky.create({ prefixUrl })` | `middlewares.use(withBaseUrl)`            |
+| `ky.extend({ hooks })`     | `createXFetch()` with `middlewares.use()` |
+| `HTTPError`                | `XFetchError`                             |
+
+#### From ofetch
+
+```ts
+// ofetch
+await $fetch('/users', { query: { page: 1 } })
+const api = $fetch.create({ baseURL: 'https://api.example.com' })
+
+// x-fetch
+await xfetch('/users', { query: { page: 1 } })
+const { xfetch: api, middlewares } = createXFetch()
+middlewares.use(withBaseUrl) // ctx.url = new URL(ctx.url, 'https://api.example.com').href
+```
+
+| ofetch                               | x-fetch                        |
+| ------------------------------------ | ------------------------------ |
+| `$fetch.create({ baseURL })`         | `middlewares.use(withBaseUrl)` |
+| `$fetch.create({ onRequest })`       | `middlewares.use()`            |
+| `$fetch.create({ onResponse })`      | `middlewares.use()`            |
+| `$fetch.create({ onResponseError })` | try/catch in middleware        |
 
 ## Sponsors and Backers
 

@@ -23,8 +23,9 @@ export type URLSearchParamsOptions =
   | URLSearchParamsInit
   | object
 
+// istanbul ignore next
 // https://www.rfc-editor.org/rfc/rfc9110#section-9.1-4
-export const ApiMethod = {
+export const HttpMethod = {
   CONNECT: 'CONNECT',
   DELETE: 'DELETE',
   GET: 'GET',
@@ -36,40 +37,36 @@ export const ApiMethod = {
   TRACE: 'TRACE',
 } as const
 
-export type ApiMethod = ValueOf<typeof ApiMethod>
+export type HttpMethod = ValueOf<typeof HttpMethod>
 
-export interface FetchApiBaseOptions extends Omit<
+export interface XFetchBaseOptions extends Omit<
   RequestInit,
   'body' | 'method'
 > {
-  method?: ApiMethod
+  method?: HttpMethod
   body?: BodyInit | object
   query?: URLSearchParamsOptions
   json?: boolean
+  middlewares?: XFetchMiddleware[]
 }
 
 export type ResponseType = 'arrayBuffer' | 'blob' | 'json' | 'text' | null
 
-export interface FetchApiOptions extends FetchApiBaseOptions {
+export interface XFetchOptions extends XFetchBaseOptions {
   type?: ResponseType
 }
 
-export interface InterceptorRequest extends FetchApiOptions {
-  headers: Headers
+export interface XFetchMiddlewareContext extends XFetchOptions {
   url: string
+  method: HttpMethod
+  headers: Headers
 }
 
-export type ApiInterceptor = (
-  request: InterceptorRequest,
-  next: (request?: InterceptorRequest) => PromiseLike<Response>,
+export type XFetchMiddlewareNext = (
+  context?: XFetchMiddlewareContext,
+) => PromiseLike<Response>
+
+export type XFetchMiddleware = (
+  context: XFetchMiddlewareContext,
+  next: XFetchMiddlewareNext,
 ) => PromiseLike<Response> | Response
-
-export class ResponseError<T = never> extends Error {
-  constructor(
-    public request: InterceptorRequest,
-    public response: Response,
-    public data?: T | null,
-  ) {
-    super(response.statusText || String(response.status))
-  }
-}
