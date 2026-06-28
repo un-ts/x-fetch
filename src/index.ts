@@ -73,6 +73,8 @@ export const createXFetch = (fetch = globalThis.fetch) => {
       method,
       body,
       headers,
+      json,
+      type,
       ...rest,
     }
 
@@ -90,14 +92,14 @@ export const createXFetch = (fetch = globalThis.fetch) => {
         const { body, url, query, ...rest } = (context = ctx)
         const response = await fetch(normalizeUrl(url, query), {
           ...rest,
-          body: json ? JSON.stringify(body) : (body as BodyInit),
+          body: ctx.json ? JSON.stringify(body) : (body as BodyInit),
         })
         if (response.ok) {
           return response
         }
         throw new XFetchError(ctx, {
           response,
-          data: await extractDataFromResponse(response, type, true),
+          data: await extractDataFromResponse(response, ctx.type, true),
         })
       } catch (error) {
         if (isXFetchError(error)) {
@@ -109,17 +111,17 @@ export const createXFetch = (fetch = globalThis.fetch) => {
 
     const response = await dispatch(0, context)
 
-    if (type == null) {
+    if (context.type == null) {
       return response
     }
 
     try {
-      return await extractDataFromResponse(response, type)
+      return await extractDataFromResponse(response, context.type)
     } catch (error) {
       throw new XFetchError(context, {
         cause: error,
         response,
-        data: await extractDataFromResponse(response, type, true),
+        data: await extractDataFromResponse(response, context.type, true),
       })
     }
   }

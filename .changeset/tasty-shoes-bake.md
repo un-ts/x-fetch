@@ -10,8 +10,8 @@ Complete redesign from interceptor-based to middleware pipeline.
 - **`interceptors`** → **`middlewares`** — `use()` / `eject()` API unchanged
 - **`ResponseError`** → **`XFetchError`** — use `isXFetchError()` instead of `instanceof` for cross-realm safety
 - **`createFetchApi` / `fetchApi`** → **`createXFetch` / `xfetch`**
-- **`cleanNilValues`** is no longer exported (inlined into `normalizeUrl` internally)
-- Middleware signature changed from `(req, next)` to `(ctx, next)`, where `ctx` is a **mutable** context object (`url`, `method`, `body`, `headers`, `query`, `signal`, etc.)
+- **`cleanNilValues`** is no longer exported (inlined into `normalizeUrl` internally). `null`/`undefined` query values are still omitted; empty strings are now preserved (matching `URLSearchParams` behavior).
+- Middleware signature changed from `(req, next)` to `(ctx, next)`, where `ctx` is a **mutable** context object (`method`, `url`, ...). Middleware can override `ctx.json` (whether to JSON-stringify body) and `ctx.type` (response parsing) — the final context at the fetch leaf is authoritative.
 
 #### New Features
 

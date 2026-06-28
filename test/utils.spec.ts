@@ -19,9 +19,9 @@ test('normalizeUrl', () => {
     'test?x=y&foo=bar&foo=baz',
   )
   expect(normalizeUrl('', { foo: ['bar', null, '', 'baz'] })).toBe(
-    '?foo=bar&foo=baz',
+    '?foo=bar&foo=&foo=baz',
   )
-  expect(normalizeUrl('', { foo: null, bar: '' })).toBe('')
+  expect(normalizeUrl('', { foo: null, bar: '' })).toBe('?bar=')
   expect(normalizeUrl('', 'foo=bar')).toBe('?foo=bar')
   expect(normalizeUrl('', new URLSearchParams('foo=bar'))).toBe('?foo=bar')
 })

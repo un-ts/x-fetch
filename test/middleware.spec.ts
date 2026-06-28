@@ -219,3 +219,33 @@ test('multiple middlewares work correctly', async () => {
   await xfetch('https://example.com')
   expect(callOrder).toEqual(['a-in', 'b-in', 'fetch', 'b-out', 'a-out'])
 })
+
+test('middleware can override json and type', async () => {
+  let receivedBody = ''
+
+  const mockFetch = async (_url: RequestInfo | URL, init?: RequestInit) => {
+    receivedBody = (init?.body as string) || ''
+    return new Response(receivedBody, {
+      status: 200,
+      headers: { 'Content-Type': 'text/plain' },
+    })
+  }
+
+  const { middlewares, xfetch } = createXFetch(mockFetch)
+
+  const override: XFetchMiddleware = async (ctx, next) => {
+    ctx.json = false
+    ctx.type = 'text'
+    return next()
+  }
+
+  middlewares.use(override)
+
+  const data = await xfetch('https://example.com', {
+    method: 'POST',
+    body: 'raw-string',
+  })
+
+  expect(receivedBody).toBe('raw-string')
+  expect(data).toBe('raw-string')
+})

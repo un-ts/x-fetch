@@ -23,12 +23,12 @@ export const normalizeUrl = (url: string, query?: URLSearchParamsOptions) => {
     >) {
       if (Array.isArray(value)) {
         for (const item of value as unknown[]) {
-          if (item != null && item !== '') {
+          if (item != null) {
             // eslint-disable-next-line @typescript-eslint/no-base-to-string
             searchParams.append(key, String(item))
           }
         }
-      } else if (value != null && value !== '') {
+      } else if (value != null) {
         // eslint-disable-next-line @typescript-eslint/no-base-to-string
         searchParams.set(key, String(value))
       }
@@ -37,14 +37,15 @@ export const normalizeUrl = (url: string, query?: URLSearchParamsOptions) => {
     searchParams = new URLSearchParams(query)
   }
 
-  const search = String(searchParams)
+  // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+  const search = searchParams + ''
   // eslint-disable-next-line sonarjs/no-nested-conditional
   return search ? url + (url.includes('?') ? '&' : '?') + search : url
 }
 
 export async function extractDataFromResponse(
   res: Response,
-  type: null,
+  type: null | undefined,
   fallback?: boolean,
 ): Promise<Response>
 export async function extractDataFromResponse(

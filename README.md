@@ -13,7 +13,7 @@
 [![Code Style: Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 [![changesets](https://img.shields.io/badge/maintained%20with-changesets-176de3.svg)](https://github.com/changesets/changesets)
 
-A simple but elegant `fetch` API wrapper with less than `840B` minified and brotlied, use `fetch` like a charm
+A simple but elegant `fetch` API wrapper with less than `850B` minified and brotlied, use `fetch` like a charm
 
 ## TOC <!-- omit in toc -->
 
@@ -89,6 +89,13 @@ middlewares.eject(middleware)
 
 // per-call — merged with global middlewares (global → per-call → fetch)
 await xfetch('url', { middlewares: [middleware] })
+
+// ctx is mutable — middleware can override json, type, url, etc.
+const forceText: XFetchMiddleware = async (ctx, next) => {
+  ctx.json = false
+  ctx.type = 'text'
+  return next()
+}
 
 // --- Common recipes ---
 

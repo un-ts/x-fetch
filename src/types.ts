@@ -50,9 +50,16 @@ export interface XFetchBaseOptions extends Omit<
   middlewares?: XFetchMiddleware[]
 }
 
-export type ResponseType = 'arrayBuffer' | 'blob' | 'json' | 'text' | null
+export type ResponseType =
+  | 'arrayBuffer'
+  | 'blob'
+  | 'json'
+  | 'text'
+  | null
+  | undefined
 
 export interface XFetchOptions extends XFetchBaseOptions {
+  // eslint-disable-next-line sonarjs/no-redundant-optional
   type?: ResponseType
 }
 
