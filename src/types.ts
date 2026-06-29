@@ -23,6 +23,7 @@ export type URLSearchParamsOptions =
   | URLSearchParamsInit
   | object
 
+/** RFC 9110 HTTP methods. */
 // istanbul ignore next
 // https://www.rfc-editor.org/rfc/rfc9110#section-9.1-4
 export const HttpMethod = {
@@ -39,6 +40,7 @@ export const HttpMethod = {
 
 export type HttpMethod = ValueOf<typeof HttpMethod>
 
+/** Options passed to `xfetch()` and available on middleware context. */
 export interface XFetchBaseOptions extends Omit<
   RequestInit,
   'body' | 'method'
@@ -46,33 +48,29 @@ export interface XFetchBaseOptions extends Omit<
   method?: HttpMethod
   body?: BodyInit | object
   query?: URLSearchParamsOptions
-  json?: boolean
   middlewares?: XFetchMiddleware[]
 }
 
-export type ResponseType =
-  | 'arrayBuffer'
-  | 'blob'
-  | 'json'
-  | 'text'
-  | null
-  | undefined
+/** Shape of the response `type` option — controls how the response body is parsed. */
+export type ResponseType = Nullable<'arrayBuffer' | 'blob' | 'json' | 'text'>
 
 export interface XFetchOptions extends XFetchBaseOptions {
-  // eslint-disable-next-line sonarjs/no-redundant-optional
   type?: ResponseType
 }
 
+/** Mutable context passed through the middleware chain. */
 export interface XFetchMiddlewareContext extends XFetchOptions {
   url: string
   method: HttpMethod
   headers: Headers
 }
 
+/** The `next` callback — invokes the next middleware or the fetch leaf. */
 export type XFetchMiddlewareNext = (
   context?: XFetchMiddlewareContext,
 ) => PromiseLike<Response>
 
+/** A middleware function. Mutate `ctx`, call `next()`, and return a `Response`. */
 export type XFetchMiddleware = (
   context: XFetchMiddlewareContext,
   next: XFetchMiddlewareNext,

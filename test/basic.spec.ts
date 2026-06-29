@@ -26,7 +26,7 @@ test('it should just work', async () => {
 })
 
 test('middlewares should just work', async () => {
-  const interceptor: XFetchMiddleware = (req, next) => {
+  const middleware: XFetchMiddleware = (req, next) => {
     if (!/^https?:\/\//.test(req.url)) {
       req.url =
         'https://jsonplaceholder.typicode.com' +
@@ -40,7 +40,7 @@ test('middlewares should just work', async () => {
     '[Error: Failed to parse URL from /todos/1]',
   )
 
-  middlewares.use(interceptor)
+  middlewares.use(middleware)
 
   expect(
     await xfetch<{
@@ -56,8 +56,8 @@ test('middlewares should just work', async () => {
     }
   `)
 
-  expect(middlewares.eject(interceptor)).toBe(true)
-  expect(middlewares.eject(interceptor)).toBe(false)
+  expect(middlewares.eject(middleware)).toBe(true)
+  expect(middlewares.eject(middleware)).toBe(false)
 
   await expect(xfetch('/todos/1')).rejects.toThrowErrorMatchingInlineSnapshot(
     '[Error: Failed to parse URL from /todos/1]',
@@ -127,7 +127,6 @@ test('with json: false does not stringify body', async () => {
   await xfetch('https://example.com', {
     method: 'POST',
     body: '{"foo":"bar"}',
-    json: false,
   })
 
   expect(body).toBe('{"foo":"bar"}')

@@ -234,7 +234,6 @@ test('middleware can override json and type', async () => {
   const { middlewares, xfetch } = createXFetch(mockFetch)
 
   const override: XFetchMiddleware = async (ctx, next) => {
-    ctx.json = false
     ctx.type = 'text'
     return next()
   }

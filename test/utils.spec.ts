@@ -64,6 +64,40 @@ test('extractDataFromResponse', async () => {
     'fallback text',
   )
 
+  // text() throws without fallback — json/text types
+  const res3 = new Response('unused')
+  const clone3 = res3.clone.bind(res3)
+  res3.clone = () => {
+    const c = clone3()
+    Object.defineProperty(c, 'text', {
+      value: async () => {
+        throw new Error('text-failed')
+      },
+    })
+    return c
+  }
+  await expect(extractDataFromResponse(res3, 'text')).rejects.toThrow(
+    'text-failed',
+  )
+  await expect(extractDataFromResponse(res3, 'json')).rejects.toThrow(
+    'text-failed',
+  )
+
+  // text() throws with fallback=true — json/text types
+  const res4 = new Response('unused')
+  const clone4 = res4.clone.bind(res4)
+  res4.clone = () => {
+    const c = clone4()
+    Object.defineProperty(c, 'text', {
+      value: async () => {
+        throw new Error('text-failed')
+      },
+    })
+    return c
+  }
+  expect(await extractDataFromResponse(res4, 'text', true)).toBeUndefined()
+  expect(await extractDataFromResponse(res4, 'json', true)).toBeUndefined()
+
   // binary type throws without fallback
   const res2 = new Response('x')
   const clone2 = res2.clone.bind(res2)

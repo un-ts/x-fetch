@@ -11,13 +11,13 @@ Complete redesign from interceptor-based to middleware pipeline.
 - **`ResponseError`** → **`XFetchError`** — use `isXFetchError()` instead of `instanceof` for cross-realm safety
 - **`createFetchApi` / `fetchApi`** → **`createXFetch` / `xfetch`**
 - **`cleanNilValues`** is no longer exported (inlined into `normalizeUrl` internally). `null`/`undefined` query values are still omitted; empty strings are now preserved (matching `URLSearchParams` behavior).
-- Middleware signature changed from `(req, next)` to `(ctx, next)`, where `ctx` is a **mutable** context object (`method`, `url`, ...). Middleware can override `ctx.json` (whether to JSON-stringify body) and `ctx.type` (response parsing) — the final context at the fetch leaf is authoritative.
+- Middleware signature changed from `(req, next)` to `(ctx, next)`, where `ctx` is a **mutable** context object (`method`, `url`, ...). Middleware can override `ctx.type` (response parsing). JSON body serialization is auto-detected from `ctx.body` at the fetch leaf — the final context is authoritative.
 
 #### New Features
 
 - `next()` is optional — defaults to the previous context, enables clean retry: `try { await next() } catch { return next() }`
 - Per-request `middlewares` option: `xfetch(url, { middlewares: [...] })`, composed as global → per-call → fetch
-- Cross-realm error detection via `Symbol.for('x-fetch.error')` — `isXFetchError()` works across iframes / workers
+- Cross-realm error detection via `Symbol.for('x-fetch')` — `isXFetchError()` works across iframes / workers
 - Consistent error wrapping: network failures, JSON parse errors, non-ok responses all wrapped as `XFetchError`
 
 #### Migration
