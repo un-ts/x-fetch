@@ -1,29 +1,12 @@
-/* eslint-disable unicorn-x/no-await-expression-member */
+/* eslint-disable unicorn-x/no-await-expression-member, @typescript-eslint/require-await */
 
-import {
-  cleanNilValues,
-  extractDataFromResponse,
-  isPlainObject,
-  normalizeUrl,
-} from 'x-fetch'
+import { extractDataFromResponse, isPlainObject, normalizeUrl } from 'x-fetch'
 
 test('isPlainObject', () => {
   expect(isPlainObject({})).toBe(true)
   expect(isPlainObject([])).toBe(false)
   expect(isPlainObject(0)).toBe(false)
   expect(isPlainObject(true)).toBe(false)
-})
-
-test('cleanNilValues', () => {
-  expect(cleanNilValues('')).toBe('')
-  expect(cleanNilValues(true)).toBe(true)
-  expect(cleanNilValues({ foo: 'bar' })).toEqual({ foo: 'bar' })
-  expect(cleanNilValues({ foo: 'bar', test: null })).toEqual({ foo: 'bar' })
-  expect(cleanNilValues({ foo: 'bar', test: '' })).toEqual({
-    foo: 'bar',
-    test: '',
-  })
-  expect(cleanNilValues({ foo: 'bar', test: '' }, true)).toEqual({ foo: 'bar' })
 })
 
 test('normalizeUrl', () => {
@@ -35,6 +18,12 @@ test('normalizeUrl', () => {
   expect(normalizeUrl('test?x=y', { foo: ['bar', 'baz'] })).toBe(
     'test?x=y&foo=bar&foo=baz',
   )
+  expect(normalizeUrl('', { foo: ['bar', null, '', 'baz'] })).toBe(
+    '?foo=bar&foo=&foo=baz',
+  )
+  expect(normalizeUrl('', { foo: null, bar: '' })).toBe('?bar=')
+  expect(normalizeUrl('', 'foo=bar')).toBe('?foo=bar')
+  expect(normalizeUrl('', new URLSearchParams('foo=bar'))).toBe('?foo=bar')
 })
 
 test('extractDataFromResponse', async () => {
@@ -58,4 +47,70 @@ test('extractDataFromResponse', async () => {
     (await extractDataFromResponse(new Response('foo'), 'arrayBuffer'))
       .byteLength,
   ).toBe(3)
+
+  // binary type fallback when type method throws and fallback=true
+  const res = new Response('fallback text')
+  const clone = res.clone.bind(res)
+  res.clone = () => {
+    const c = clone()
+    Object.defineProperty(c, 'arrayBuffer', {
+      value: async () => {
+        throw new Error('boom')
+      },
+    })
+    return c
+  }
+  expect(await extractDataFromResponse(res, 'arrayBuffer', true)).toBe(
+    'fallback text',
+  )
+
+  // text() throws without fallback — json/text types
+  const res3 = new Response('unused')
+  const clone3 = res3.clone.bind(res3)
+  res3.clone = () => {
+    const c = clone3()
+    Object.defineProperty(c, 'text', {
+      value: async () => {
+        throw new Error('text-failed')
+      },
+    })
+    return c
+  }
+  await expect(extractDataFromResponse(res3, 'text')).rejects.toThrow(
+    'text-failed',
+  )
+  await expect(extractDataFromResponse(res3, 'json')).rejects.toThrow(
+    'text-failed',
+  )
+
+  // text() throws with fallback=true — json/text types
+  const res4 = new Response('unused')
+  const clone4 = res4.clone.bind(res4)
+  res4.clone = () => {
+    const c = clone4()
+    Object.defineProperty(c, 'text', {
+      value: async () => {
+        throw new Error('text-failed')
+      },
+    })
+    return c
+  }
+  expect(await extractDataFromResponse(res4, 'text', true)).toBeUndefined()
+  expect(await extractDataFromResponse(res4, 'json', true)).toBeUndefined()
+
+  // binary type throws without fallback
+  const res2 = new Response('x')
+  const clone2 = res2.clone.bind(res2)
+  res2.clone = () => {
+    const c = clone2()
+    Object.defineProperty(c, 'arrayBuffer', {
+      value: async () => {
+        throw new Error('boom')
+      },
+    })
+    return c
+  }
+  await expect(extractDataFromResponse(res2, 'arrayBuffer')).rejects.toThrow(
+    'boom',
+  )
 })

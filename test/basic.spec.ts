@@ -1,4 +1,13 @@
-import { type ApiInterceptor, xfetch, interceptors } from 'x-fetch'
+/* eslint-disable @typescript-eslint/no-magic-numbers, @typescript-eslint/require-await, vitest/no-conditional-expect */
+
+import {
+  createXFetch,
+  isXFetchError,
+  middlewares,
+  xfetch,
+  type Nullable,
+  type XFetchMiddleware,
+} from 'x-fetch'
 
 test('it should just work', async () => {
   expect(
@@ -16,8 +25,8 @@ test('it should just work', async () => {
   `)
 })
 
-test('interceptors should just work', async () => {
-  const interceptor: ApiInterceptor = (req, next) => {
+test('middlewares should just work', async () => {
+  const middleware: XFetchMiddleware = (req, next) => {
     if (!/^https?:\/\//.test(req.url)) {
       req.url =
         'https://jsonplaceholder.typicode.com' +
@@ -28,10 +37,10 @@ test('interceptors should just work', async () => {
   }
 
   await expect(xfetch('/todos/1')).rejects.toThrowErrorMatchingInlineSnapshot(
-    '[TypeError: Failed to parse URL from /todos/1]',
+    '[Error: Failed to parse URL from /todos/1]',
   )
 
-  interceptors.use(interceptor)
+  middlewares.use(middleware)
 
   expect(
     await xfetch<{
@@ -47,10 +56,99 @@ test('interceptors should just work', async () => {
     }
   `)
 
-  expect(interceptors.eject(interceptor)).toBe(true)
-  expect(interceptors.eject(interceptor)).toBe(false)
+  expect(middlewares.eject(middleware)).toBe(true)
+  expect(middlewares.eject(middleware)).toBe(false)
 
   await expect(xfetch('/todos/1')).rejects.toThrowErrorMatchingInlineSnapshot(
-    '[TypeError: Failed to parse URL from /todos/1]',
+    '[Error: Failed to parse URL from /todos/1]',
   )
+})
+
+test('type: null returns raw Response', async () => {
+  const mockFetch = async () =>
+    new Response('ok', { status: 200, statusText: 'OK' })
+
+  const { xfetch } = createXFetch(mockFetch)
+
+  const res = await xfetch('https://example.com', { type: null })
+  expect(res).toBeInstanceOf(Response)
+  expect(res.status).toBe(200)
+})
+
+test('XFetchError on malformed JSON response', async () => {
+  const mockFetch = async () =>
+    new Response('not-json', {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    })
+
+  const { xfetch } = createXFetch(mockFetch)
+
+  try {
+    await xfetch('https://example.com')
+  } catch (error) {
+    if (!isXFetchError(error)) {
+      throw error
+    }
+    expect(error.response).toBeDefined()
+    expect(error.response!.status).toBe(200)
+    expect(error.cause).toBeInstanceOf(SyntaxError)
+  }
+})
+
+test('auto JSON-stringifies plain object body', async () => {
+  let body: Nullable<BodyInit>
+
+  const mockFetch = async (_url: RequestInfo | URL, init?: RequestInit) => {
+    body = init?.body
+    return new Response(JSON.stringify({ ok: true }), { status: 200 })
+  }
+
+  const { xfetch } = createXFetch(mockFetch)
+
+  await xfetch('https://example.com', {
+    method: 'POST',
+    body: { foo: 'bar' },
+  })
+
+  expect(body).toBe('{"foo":"bar"}')
+})
+
+test('with json: false does not stringify body', async () => {
+  let body: Nullable<BodyInit>
+
+  const mockFetch = async (_url: RequestInfo | URL, init?: RequestInit) => {
+    body = init?.body
+    return new Response(JSON.stringify({ ok: true }), { status: 200 })
+  }
+
+  const { xfetch } = createXFetch(mockFetch)
+
+  await xfetch('https://example.com', {
+    method: 'POST',
+    body: '{"foo":"bar"}',
+  })
+
+  expect(body).toBe('{"foo":"bar"}')
+})
+
+test('auto JSON-stringifies array body', async () => {
+  let contentType = ''
+  let body: Nullable<BodyInit>
+
+  const mockFetch = async (_url: RequestInfo | URL, init?: RequestInit) => {
+    contentType = (init!.headers as Headers).get('Content-Type')!
+    body = init?.body
+    return new Response(JSON.stringify({ ok: true }), { status: 200 })
+  }
+
+  const { xfetch } = createXFetch(mockFetch)
+
+  await xfetch('https://example.com', {
+    method: 'POST',
+    body: ['a', 'b'],
+  })
+
+  expect(contentType).toBe('application/json')
+  expect(body).toBe('["a","b"]')
 })

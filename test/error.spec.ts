@@ -1,14 +1,8 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers, @typescript-eslint/require-await, vitest/no-conditional-expect */
 
-import { createXFetch, ResponseError } from 'x-fetch'
+import { createXFetch, isXFetchError } from 'x-fetch'
 
-function assertResponseError<T>(err: unknown): asserts err is ResponseError<T> {
-  if (!(err instanceof ResponseError)) {
-    throw new TypeError('Expected ResponseError')
-  }
-}
-
-test('throws ResponseError for 404 response', async () => {
+test('throws XFetchError for 404 response', async () => {
   // Create a mock fetch function that returns a 404 response
   const mockFetch = async () =>
     new Response('Not Found', { status: 404, statusText: 'Not Found' })
@@ -16,7 +10,7 @@ test('throws ResponseError for 404 response', async () => {
   // Create a custom xfetch using our mock fetch
   const { xfetch } = createXFetch(mockFetch)
 
-  // Test that it throws a ResponseError with the correct message
+  // Test that it throws a XFetchError with the correct message
   await expect(
     xfetch('https://example.com/not-found'),
   ).rejects.toThrowErrorMatchingInlineSnapshot(`[Error: Not Found]`)
@@ -25,16 +19,17 @@ test('throws ResponseError for 404 response', async () => {
   try {
     await xfetch('https://example.com/not-found')
   } catch (error) {
-    expect(error).toBeInstanceOf(ResponseError)
-    assertResponseError<string>(error)
-    expect(error.response.status).toBe(404)
+    if (!isXFetchError<string>(error)) {
+      throw error
+    }
+    expect(error.response!.status).toBe(404)
     expect(error.message).toBe('Not Found')
-    expect(error.request.url).toBe('https://example.com/not-found')
+    expect(error.context.url).toBe('https://example.com/not-found')
     expect(error.data).toBe('Not Found')
   }
 })
 
-test('throws ResponseError with JSON data for 500 response', async () => {
+test('throws XFetchError with JSON data for 500 response', async () => {
   // Create a JSON error body
   const errorBody = JSON.stringify({ error: 'Server Error', code: 500 })
 
@@ -49,7 +44,7 @@ test('throws ResponseError with JSON data for 500 response', async () => {
   // Create a custom xfetch using our mock fetch
   const { xfetch } = createXFetch(mockFetch)
 
-  // Test that it throws a ResponseError with the correct message
+  // Test that it throws a XFetchError with the correct message
   await expect(
     xfetch('https://example.com/api'),
   ).rejects.toThrowErrorMatchingInlineSnapshot(`[Error: Internal Server Error]`)
@@ -58,9 +53,10 @@ test('throws ResponseError with JSON data for 500 response', async () => {
   try {
     await xfetch('https://example.com/api')
   } catch (error) {
-    assertResponseError<{ error: string; code: number }>(error)
-    expect(error).toBeInstanceOf(ResponseError)
-    expect(error.response.status).toBe(500)
+    if (!isXFetchError<{ error: string; code: number }>(error)) {
+      throw error
+    }
+    expect(error.response!.status).toBe(500)
     expect(error.message).toBe('Internal Server Error')
     expect(error.data).toEqual({ error: 'Server Error', code: 500 })
   }
@@ -85,9 +81,10 @@ test('handles invalid JSON in error response', async () => {
   try {
     await xfetch('https://example.com/api')
   } catch (error) {
-    assertResponseError<string>(error)
-    expect(error).toBeInstanceOf(ResponseError)
-    expect(error.response.status).toBe(400)
+    if (!isXFetchError<string>(error)) {
+      throw error
+    }
+    expect(error.response!.status).toBe(400)
     expect(error.message).toBe('Bad Request')
     // Should fallback to the raw text when JSON parsing fails
     expect(typeof error.data).toBe('string')

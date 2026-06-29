@@ -23,8 +23,10 @@ export type URLSearchParamsOptions =
   | URLSearchParamsInit
   | object
 
+/** RFC 9110 HTTP methods. */
+// istanbul ignore next
 // https://www.rfc-editor.org/rfc/rfc9110#section-9.1-4
-export const ApiMethod = {
+export const HttpMethod = {
   CONNECT: 'CONNECT',
   DELETE: 'DELETE',
   GET: 'GET',
@@ -36,40 +38,40 @@ export const ApiMethod = {
   TRACE: 'TRACE',
 } as const
 
-export type ApiMethod = ValueOf<typeof ApiMethod>
+export type HttpMethod = ValueOf<typeof HttpMethod>
 
-export interface FetchApiBaseOptions extends Omit<
+/** Options passed to `xfetch()` and available on middleware context. */
+export interface XFetchBaseOptions extends Omit<
   RequestInit,
   'body' | 'method'
 > {
-  method?: ApiMethod
+  method?: HttpMethod
   body?: BodyInit | object
   query?: URLSearchParamsOptions
-  json?: boolean
+  middlewares?: XFetchMiddleware[]
 }
 
-export type ResponseType = 'arrayBuffer' | 'blob' | 'json' | 'text' | null
+/** Shape of the response `type` option — controls how the response body is parsed. */
+export type ResponseType = Nullable<'arrayBuffer' | 'blob' | 'json' | 'text'>
 
-export interface FetchApiOptions extends FetchApiBaseOptions {
+export interface XFetchOptions extends XFetchBaseOptions {
   type?: ResponseType
 }
 
-export interface InterceptorRequest extends FetchApiOptions {
-  headers: Headers
+/** Mutable context passed through the middleware chain. */
+export interface XFetchMiddlewareContext extends XFetchOptions {
   url: string
+  method: HttpMethod
+  headers: Headers
 }
 
-export type ApiInterceptor = (
-  request: InterceptorRequest,
-  next: (request?: InterceptorRequest) => PromiseLike<Response>,
+/** The `next` callback — invokes the next middleware or the fetch leaf. */
+export type XFetchMiddlewareNext = (
+  context?: XFetchMiddlewareContext,
+) => PromiseLike<Response>
+
+/** A middleware function. Mutate `ctx`, call `next()`, and return a `Response`. */
+export type XFetchMiddleware = (
+  context: XFetchMiddlewareContext,
+  next: XFetchMiddlewareNext,
 ) => PromiseLike<Response> | Response
-
-export class ResponseError<T = never> extends Error {
-  constructor(
-    public request: InterceptorRequest,
-    public response: Response,
-    public data?: T | null,
-  ) {
-    super(response.statusText || String(response.status))
-  }
-}
