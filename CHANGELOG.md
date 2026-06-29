@@ -1,5 +1,80 @@
 # Change Log
 
+## 0.3.0
+
+### Minor Changes
+
+- [#49](https://github.com/un-ts/x-fetch/pull/49) [`96d49f8`](https://github.com/un-ts/x-fetch/commit/96d49f8cb036f9ded836fe16e48790d6e155ecdb) Thanks [@JounQin](https://github.com/JounQin)! - Complete redesign from interceptor-based to middleware pipeline.
+
+  #### Breaking Changes
+  - **`ApiInterceptor`** → **`XFetchMiddleware`**
+  - **`interceptors`** → **`middlewares`** — `use()` / `eject()` API unchanged
+  - **`ResponseError`** → **`XFetchError`** — use `isXFetchError()` instead of `instanceof` for cross-realm safety
+  - **`createFetchApi` / `fetchApi`** → **`createXFetch` / `xfetch`**
+  - **`cleanNilValues`** is no longer exported (inlined into `normalizeUrl` internally). `null`/`undefined` query values are still omitted; empty strings are now preserved (matching `URLSearchParams` behavior).
+  - Middleware signature changed from `(req, next)` to `(ctx, next)`, where `ctx` is a **mutable** context object (`method`, `url`, ...). Middleware can override `ctx.type` (response parsing). JSON body serialization is auto-detected from `ctx.body` at the fetch leaf — the final context is authoritative.
+
+  #### New Features
+  - `next()` is optional — defaults to the previous context, enables clean retry: `try { await next() } catch { return next() }`
+  - Per-request `middlewares` option: `xfetch(url, { middlewares: [...] })`, composed as global → per-call → fetch
+  - Cross-realm error detection via `Symbol.for('x-fetch')` — `isXFetchError()` works across iframes / workers
+  - Consistent error wrapping: network failures, JSON parse errors, non-ok responses all wrapped as `XFetchError`
+
+  #### Migration
+
+  ```diff
+  - import { createFetchApi, fetchApi, ResponseError } from 'x-fetch'
+  + import { createXFetch, xfetch, isXFetchError } from 'x-fetch'
+  ```
+
+  Before:
+
+  ```ts
+  const interceptor: ApiInterceptor = (req, next) => {
+    req.headers.set('Authorization', 'Bearer token')
+    return next(req)
+  }
+  interceptors.use(interceptor)
+  ```
+
+  After:
+
+  ```ts
+  const middleware: XFetchMiddleware = (ctx, next) => {
+    ctx.headers.set('Authorization', 'Bearer token')
+    return next()
+  }
+  middlewares.use(middleware)
+  ```
+
+  Retry with snapshot:
+
+  ```ts
+  const retry: XFetchMiddleware = async (ctx, next) => {
+    const snapshot = { ...ctx, headers: new Headers(ctx.headers) }
+    try {
+      return await next()
+    } catch {
+      return next(snapshot)
+    }
+  }
+  ```
+
+  Error handling:
+
+  ```diff
+    } catch (error) {
+  -   if (error instanceof ResponseError) { ... }
+  +   if (isXFetchError(error)) { ... }
+    }
+  ```
+
+  Per-request middlewares:
+
+  ```ts
+  await xfetch('/api', { middlewares: [retry, withCache] })
+  ```
+
 ## 0.2.7
 
 ### Patch Changes
