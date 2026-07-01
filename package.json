@@ -75,7 +75,7 @@
     "@types/node": "^24.13.2",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
-    "@types/web": "^0.0.350",
+    "@types/web": "^0.0.352",
     "@vitejs/plugin-react-swc": "^4.3.1",
     "@vitest/coverage-istanbul": "^4.1.9",
     "@vitest/eslint-plugin": "^1.6.20",
