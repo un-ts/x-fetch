@@ -96,7 +96,7 @@
     "size-limit": "^13.0.0",
     "stylelint": "^17.13.0",
     "type-coverage": "^2.29.7",
-    "typescript": "^7.0.0",
+    "typescript": "^6.0.3",
     "vite": "^8.1.0",
     "vitest": "^4.1.9",
     "yarn-berry-deduplicate": "^6.1.3"
