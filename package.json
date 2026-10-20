@@ -62,8 +62,8 @@
     "@1stg/browserslist-config": "^2.1.4",
     "@1stg/common-config": "^15.0.0",
     "@1stg/stylelint-config": "^6.2.0",
-    "@changesets/changelog-github": "^0.7.0",
-    "@changesets/cli": "^2.31.0",
+    "@changesets/changelog-github": "^1.0.1",
+    "@changesets/cli": "^3.0.3",
     "@commitlint/cli": "^21.1.0",
     "@edge-runtime/vm": "^5.0.0",
     "@eslint-react/eslint-plugin": "^5.9.2",
@@ -76,6 +76,7 @@
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@types/web": "^0.0.354",
+    "@typescript/native": "npm:typescript@^7.0.2",
     "@vitejs/plugin-react-swc": "^4.3.1",
     "@vitest/coverage-istanbul": "^4.1.9",
     "@vitest/eslint-plugin": "^1.6.20",
@@ -96,10 +97,13 @@
     "size-limit": "^13.0.0",
     "stylelint": "^17.13.0",
     "type-coverage": "^2.29.7",
-    "typescript": "^6.0.3",
+    "typescript": "npm:@typescript/typescript6@^6.0.2",
     "vite": "^8.1.0",
     "vitest": "^4.1.9",
     "yarn-berry-deduplicate": "^6.1.3"
+  },
+  "publishConfig": {
+    "provenance": true
   },
   "typeCoverage": {
     "atLeast": 100,
