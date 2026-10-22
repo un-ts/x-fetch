@@ -3,7 +3,8 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "paths": {
-      "x-fetch": ["./src/index.ts"]
+      "x-fetch": ["./src/index.ts"],
+      "x-fetch/observable": ["./src/observable.ts"]
     },
     "types": ["mdx", "react", "react-dom", "web"]
   }

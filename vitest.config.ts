@@ -3,6 +3,9 @@ import { defineConfig } from 'vitest/config'
 export default defineConfig({
   resolve: {
     alias: {
+      // keep the subpath first — aliases match by prefix
+      'x-fetch/observable': new URL('src/observable.ts', import.meta.url)
+        .pathname,
       'x-fetch': new URL('src/index.ts', import.meta.url).pathname,
     },
   },

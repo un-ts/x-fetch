@@ -20,6 +20,7 @@ A simple but elegant `fetch` API wrapper with less than `830B` minified and brot
 - [Usage](#usage)
   - [Install](#install)
   - [API](#api)
+  - [Observable](#observable)
   - [Migration Guides](#migration-guides)
 - [Sponsors and Backers](#sponsors-and-backers)
   - [Sponsors](#sponsors)
@@ -288,6 +289,106 @@ try {
 
 const { xfetch, middlewares } = createXFetch() // or createXFetch(customFetch)
 ```
+
+### Observable
+
+`x-fetch/observable` is the same `xfetch`, except every call returns an `XFetchObservable` instead of a `Promise` — same options, same middleware chain, same `XFetchError`:
+
+```ts
+import { createXFetch } from 'x-fetch/observable'
+
+const { xfetch } = createXFetch() // or createXFetch(customFetch)
+
+const todos = xfetch<Array<{ id: number }>>('/todos')
+
+// `subscribe()` is lazy and cold — it starts its own request through the chain
+const subscription = todos.subscribe({
+  next: todos => console.log(todos), // same value `await xfetch(...)` would resolve to
+  error: error => console.error(error), // same XFetchError, `data` included
+  complete: () => console.log('done'),
+})
+
+// abort the in-flight request
+subscription.unsubscribe()
+```
+
+- `next` receives exactly what the `x-fetch` entry resolves to — parsed by `type`, or the raw `Response` when `type: null`.
+- `unsubscribe()` aborts the request — the `AbortSignal` is injected by an inner middleware, so a `signal` passed in `options` is still respected and cascaded. `subscription.closed` tells whether it is over.
+- **Native observable API**: `subscribe(next, error, complete)` or `subscribe({ next, error, complete })`, and the observable returns itself under both `Symbol.observable` (TC39) and `'@@observable'` (the key RxJS falls back to).
+- **RxJS interop**: `from(xfetch('/todos'))`, `lastValueFrom(...)`, `toArray()`, `take(1)` — `unsubscribe` on the RxJS side aborts the request as well.
+
+```ts
+import { from, lastValueFrom } from 'rxjs'
+import { xfetch } from 'x-fetch/observable'
+
+const todos = await lastValueFrom(from(xfetch<Array<{ id: number }>>('/todos')))
+```
+
+Need both entries in one file? Import the aliases instead of renaming by hand:
+
+```ts
+import { xfetch } from 'x-fetch' // Promise
+import { observableXFetch, createObservableXFetch } from 'x-fetch/observable'
+```
+
+It is a separate entry so the core keeps its `830B` budget — this one bundles the core it reuses, and adds the observable machinery on top.
+
+#### Several values from one request
+
+A single value is what `await xfetch(...)` already gives you, so the interesting part is **several** values per request — a streaming body, per-attempt retries, progress. Any middleware can push values with `ctx.emit()`; the protocol parsing stays in your code:
+
+```ts
+import type { XFetchMiddleware } from 'x-fetch/observable'
+
+// one emitted value per Server-Sent Events frame
+const withSSE: XFetchMiddleware = async (ctx, next) => {
+  ctx.type = null // the body is consumed below, so don't let xfetch parse it
+  const response = await next()
+  const reader = response.body!.pipeThrough(new TextDecoderStream()).getReader()
+  let buffer = ''
+
+  for (;;) {
+    const { value, done } = await reader.read()
+    if (done) {
+      break
+    }
+    buffer += value
+
+    const frames = buffer.split('\n\n')
+    buffer = frames.pop()!
+    for (const frame of frames) {
+      const data = frame
+        .split('\n')
+        .filter(line => line.startsWith('data:'))
+        .map(line => line.slice('data:'.length).trimStart())
+        .join('\n')
+      if (data) {
+        ctx.emit?.(data) // ← pushed to the subscriber as it arrives
+      }
+    }
+  }
+
+  return response
+}
+
+// `xfetch` is the observable-ized one from the example above
+let answer = ''
+
+const tokens = xfetch<string>('/chat', {
+  method: 'POST',
+  body: { prompt: 'hi' },
+  middlewares: [withSSE],
+})
+
+tokens.subscribe({
+  next: token => (answer += token), // called once per frame, not once per request
+  complete: () => console.log('stream closed'),
+})
+```
+
+- `ctx.emit()` is added to `XFetchMiddlewareContext` by this entry through declaration merging — the core never learns about it, and it is only part of the context type when `x-fetch/observable` is imported.
+- Once a middleware emitted something, the resolved value is not emitted again — no duplicate "final" value after the frames.
+- `ctx.signal` is the request signal, so a streaming middleware can stop reading when the subscription is cancelled; `unsubscribe()` aborts the request.
 
 ### Migration Guides
 

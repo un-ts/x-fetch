@@ -70,6 +70,18 @@ export type XFetchMiddlewareNext = (
   context?: XFetchMiddlewareContext,
 ) => PromiseLike<Response>
 
+/** The `xfetch` callable — the resolved value is inferred from the `type` option. */
+export interface XFetchFunction {
+  (url: string, options: XFetchBaseOptions & { type: null }): Promise<Response>
+  (
+    url: string,
+    options: XFetchBaseOptions & { type: 'arrayBuffer' },
+  ): Promise<ArrayBuffer>
+  (url: string, options: XFetchBaseOptions & { type: 'blob' }): Promise<Blob>
+  (url: string, options: XFetchBaseOptions & { type: 'text' }): Promise<string>
+  <T>(url: string, options?: XFetchBaseOptions & { type?: 'json' }): Promise<T>
+}
+
 /** A middleware function. Mutate `ctx`, call `next()`, and return a `Response`. */
 export type XFetchMiddleware = (
   context: XFetchMiddlewareContext,

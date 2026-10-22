@@ -2,5 +2,9 @@
   {
     "path": "lib/index.js",
     "limit": "830B"
+  },
+  {
+    "path": "lib/observable.js",
+    "limit": "1.4 kB"
   }
 ]
