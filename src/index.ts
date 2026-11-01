@@ -38,39 +38,21 @@ export const createXFetch = (fetch = globalThis.fetch) => {
   }
 
   /** Fetch a URL and parse as `null` — returns the raw `Response`. */
-  function xfetch(
-    url: string,
-    options: XFetchBaseOptions & { type: null },
-  ): Promise<Response>
+  function xfetch(url: string, options: XFetchBaseOptions & { type: null }): Promise<Response>
   /** Fetch a URL and parse as `ArrayBuffer`. */
   function xfetch(
     url: string,
     options: XFetchBaseOptions & { type: 'arrayBuffer' },
   ): Promise<ArrayBuffer>
   /** Fetch a URL and parse as `Blob`. */
-  function xfetch(
-    url: string,
-    options: XFetchBaseOptions & { type: 'blob' },
-  ): Promise<Blob>
+  function xfetch(url: string, options: XFetchBaseOptions & { type: 'blob' }): Promise<Blob>
   /** Fetch a URL and parse as `text`. */
-  function xfetch(
-    url: string,
-    options: XFetchBaseOptions & { type: 'text' },
-  ): Promise<string>
+  function xfetch(url: string, options: XFetchBaseOptions & { type: 'text' }): Promise<string>
   /** Fetch a URL and parse as JSON (default). */
-  function xfetch<T>(
-    url: string,
-    options?: XFetchBaseOptions & { type?: 'json' },
-  ): Promise<T>
+  function xfetch<T>(url: string, options?: XFetchBaseOptions & { type?: 'json' }): Promise<T>
   async function xfetch(
     url: string,
-    {
-      method = 'GET',
-      body,
-      headers,
-      type = 'json',
-      ...rest
-    }: XFetchOptions = {},
+    { method = 'GET', body, headers, type = 'json', ...rest }: XFetchOptions = {},
   ) {
     let context: XFetchMiddlewareContext = {
       url,
@@ -83,10 +65,7 @@ export const createXFetch = (fetch = globalThis.fetch) => {
 
     const allMiddlewares = [...middlewares_, ...(context.middlewares || [])]
 
-    const dispatch = async (
-      i: number,
-      ctx: XFetchMiddlewareContext,
-    ): Promise<Response> => {
+    const dispatch = async (i: number, ctx: XFetchMiddlewareContext): Promise<Response> => {
       try {
         if (i < allMiddlewares.length) {
           return await allMiddlewares[i](ctx, c => dispatch(i + 1, c || ctx))

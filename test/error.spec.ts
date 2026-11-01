@@ -4,16 +4,15 @@ import { createXFetch, isXFetchError } from 'x-fetch'
 
 test('throws XFetchError for 404 response', async () => {
   // Create a mock fetch function that returns a 404 response
-  const mockFetch = async () =>
-    new Response('Not Found', { status: 404, statusText: 'Not Found' })
+  const mockFetch = async () => new Response('Not Found', { status: 404, statusText: 'Not Found' })
 
   // Create a custom xfetch using our mock fetch
   const { xfetch } = createXFetch(mockFetch)
 
   // Test that it throws a XFetchError with the correct message
-  await expect(
-    xfetch('https://example.com/not-found'),
-  ).rejects.toThrowErrorMatchingInlineSnapshot(`[Error: Not Found]`)
+  await expect(xfetch('https://example.com/not-found')).rejects.toThrowErrorMatchingInlineSnapshot(
+    `[Error: Not Found]`,
+  )
 
   // Test with try/catch to inspect error properties
   try {
@@ -45,9 +44,9 @@ test('throws XFetchError with JSON data for 500 response', async () => {
   const { xfetch } = createXFetch(mockFetch)
 
   // Test that it throws a XFetchError with the correct message
-  await expect(
-    xfetch('https://example.com/api'),
-  ).rejects.toThrowErrorMatchingInlineSnapshot(`[Error: Internal Server Error]`)
+  await expect(xfetch('https://example.com/api')).rejects.toThrowErrorMatchingInlineSnapshot(
+    `[Error: Internal Server Error]`,
+  )
 
   // Test with try/catch to inspect error properties
   try {

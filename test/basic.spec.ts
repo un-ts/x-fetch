@@ -29,9 +29,7 @@ test('middlewares should just work', async () => {
   const middleware: XFetchMiddleware = (req, next) => {
     if (!/^https?:\/\//.test(req.url)) {
       req.url =
-        'https://jsonplaceholder.typicode.com' +
-        (req.url.startsWith('/') ? '' : '/') +
-        req.url
+        'https://jsonplaceholder.typicode.com' + (req.url.startsWith('/') ? '' : '/') + req.url
     }
     return next(req)
   }
@@ -65,8 +63,7 @@ test('middlewares should just work', async () => {
 })
 
 test('type: null returns raw Response', async () => {
-  const mockFetch = async () =>
-    new Response('ok', { status: 200, statusText: 'OK' })
+  const mockFetch = async () => new Response('ok', { status: 200, statusText: 'OK' })
 
   const { xfetch } = createXFetch(mockFetch)
 
