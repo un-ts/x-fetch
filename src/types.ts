@@ -14,14 +14,10 @@ export type Arrayable<T, R extends boolean = false> = [R] extends [never]
 
 export type ValueOf<T> = T[keyof T]
 
-export type URLSearchParamsInit = NonNullable<
-  ConstructorParameters<typeof URLSearchParams>[0]
->
+export type URLSearchParamsInit = NonNullable<ConstructorParameters<typeof URLSearchParams>[0]>
 
 export type URLSearchParamsOptions =
-  | Record<string, Nullable<Arrayable<number | string>>>
-  | URLSearchParamsInit
-  | object
+  Record<string, Nullable<Arrayable<number | string>>> | URLSearchParamsInit | object
 
 /** RFC 9110 HTTP methods. */
 // istanbul ignore next
@@ -41,10 +37,7 @@ export const HttpMethod = {
 export type HttpMethod = ValueOf<typeof HttpMethod>
 
 /** Options passed to `xfetch()` and available on middleware context. */
-export interface XFetchBaseOptions extends Omit<
-  RequestInit,
-  'body' | 'method'
-> {
+export interface XFetchBaseOptions extends Omit<RequestInit, 'body' | 'method'> {
   method?: HttpMethod
   body?: BodyInit | object
   query?: URLSearchParamsOptions
@@ -66,9 +59,7 @@ export interface XFetchMiddlewareContext extends XFetchOptions {
 }
 
 /** The `next` callback — invokes the next middleware or the fetch leaf. */
-export type XFetchMiddlewareNext = (
-  context?: XFetchMiddlewareContext,
-) => PromiseLike<Response>
+export type XFetchMiddlewareNext = (context?: XFetchMiddlewareContext) => PromiseLike<Response>
 
 /** A middleware function. Mutate `ctx`, call `next()`, and return a `Response`. */
 export type XFetchMiddleware = (
