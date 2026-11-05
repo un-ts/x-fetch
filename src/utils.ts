@@ -21,9 +21,7 @@ export const normalizeUrl = (url: string, query?: URLSearchParamsOptions) => {
 
   if (isPlainObject(query)) {
     searchParams = new URLSearchParams()
-    for (const [key, value] of Object.entries(query) as Array<
-      [string, unknown]
-    >) {
+    for (const [key, value] of Object.entries(query) as Array<[string, unknown]>) {
       if (Array.isArray(value)) {
         for (const item of value as unknown[]) {
           if (item != null) {
@@ -132,11 +130,7 @@ export class XFetchError<T = never> extends Error {
 
   constructor(
     public context: XFetchMiddlewareContext,
-    {
-      response,
-      data,
-      cause,
-    }: { response?: Response; data?: Nullable<T>; cause?: unknown },
+    { response, data, cause }: { response?: Response; data?: Nullable<T>; cause?: unknown },
   ) {
     super(
       (cause as Error | undefined)?.message ||

@@ -2,8 +2,7 @@
 
 import { createXFetch, isXFetchError, type XFetchMiddleware } from 'x-fetch'
 
-const mockOk = () =>
-  Promise.resolve(new Response(JSON.stringify({ ok: true }), { status: 200 }))
+const mockOk = () => Promise.resolve(new Response(JSON.stringify({ ok: true }), { status: 200 }))
 
 test('next() can be called multiple times for retry', async () => {
   let fetchCalls = 0
@@ -13,9 +12,7 @@ test('next() can be called multiple times for retry', async () => {
     if (fetchCalls <= 1) {
       return Promise.resolve(new Response(null, { status: 500 }))
     }
-    return Promise.resolve(
-      new Response(JSON.stringify({ ok: true }), { status: 200 }),
-    )
+    return Promise.resolve(new Response(JSON.stringify({ ok: true }), { status: 200 }))
   }
 
   const { middlewares, xfetch } = createXFetch(mockFetch)
@@ -44,9 +41,7 @@ test('middleware can modify request between retries', async () => {
     if (!auth) {
       return Promise.resolve(new Response(null, { status: 401 }))
     }
-    return Promise.resolve(
-      new Response(JSON.stringify({ ok: true }), { status: 200 }),
-    )
+    return Promise.resolve(new Response(JSON.stringify({ ok: true }), { status: 200 }))
   }
 
   const { middlewares, xfetch } = createXFetch(mockFetch)
@@ -109,8 +104,7 @@ test('middleware can prepend base url', async () => {
 })
 
 test('middleware catches XFetchError from next()', async () => {
-  const mockFetch = async () =>
-    new Response(null, { status: 404, statusText: 'Not Found' })
+  const mockFetch = async () => new Response(null, { status: 404, statusText: 'Not Found' })
 
   const { middlewares, xfetch } = createXFetch(mockFetch)
 
@@ -136,9 +130,7 @@ test('global + per-call middlewares compose correctly', async () => {
 
   const mockFetch = () => {
     callOrder.push('fetch')
-    return Promise.resolve(
-      new Response(JSON.stringify({ ok: true }), { status: 200 }),
-    )
+    return Promise.resolve(new Response(JSON.stringify({ ok: true }), { status: 200 }))
   }
 
   const { middlewares, xfetch } = createXFetch(mockFetch)
@@ -160,13 +152,7 @@ test('global + per-call middlewares compose correctly', async () => {
   middlewares.use(global)
 
   await xfetch('https://example.com', { middlewares: [perCall] })
-  expect(callOrder).toEqual([
-    'global-in',
-    'per-call-in',
-    'fetch',
-    'per-call-out',
-    'global-out',
-  ])
+  expect(callOrder).toEqual(['global-in', 'per-call-in', 'fetch', 'per-call-out', 'global-out'])
 })
 
 test('XFetchError wraps network failure', async () => {
@@ -193,9 +179,7 @@ test('multiple middlewares work correctly', async () => {
 
   const mockFetch = () => {
     callOrder.push('fetch')
-    return Promise.resolve(
-      new Response(JSON.stringify({ ok: true }), { status: 200 }),
-    )
+    return Promise.resolve(new Response(JSON.stringify({ ok: true }), { status: 200 }))
   }
 
   const { middlewares, xfetch } = createXFetch(mockFetch)
