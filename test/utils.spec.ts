@@ -15,12 +15,8 @@ test('normalizeUrl', () => {
   expect(normalizeUrl('', { foo: ['bar', 'baz'] })).toBe('?foo=bar&foo=baz')
   expect(normalizeUrl('test?x=y')).toBe('test?x=y')
   expect(normalizeUrl('test?x=y', { foo: 'bar' })).toBe('test?x=y&foo=bar')
-  expect(normalizeUrl('test?x=y', { foo: ['bar', 'baz'] })).toBe(
-    'test?x=y&foo=bar&foo=baz',
-  )
-  expect(normalizeUrl('', { foo: ['bar', null, '', 'baz'] })).toBe(
-    '?foo=bar&foo=&foo=baz',
-  )
+  expect(normalizeUrl('test?x=y', { foo: ['bar', 'baz'] })).toBe('test?x=y&foo=bar&foo=baz')
+  expect(normalizeUrl('', { foo: ['bar', null, '', 'baz'] })).toBe('?foo=bar&foo=&foo=baz')
   expect(normalizeUrl('', { foo: null, bar: '' })).toBe('?bar=')
   expect(normalizeUrl('', 'foo=bar')).toBe('?foo=bar')
   expect(normalizeUrl('', new URLSearchParams('foo=bar'))).toBe('?foo=bar')
@@ -32,21 +28,14 @@ test('extractDataFromResponse', async () => {
   expect(await extractDataFromResponse(new Response(), 'text')).toBe('')
   expect(await extractDataFromResponse(new Response(null), 'text')).toBe('')
   expect(await extractDataFromResponse(new Response('foo'), 'text')).toBe('foo')
-  await expect(
-    extractDataFromResponse(new Response('foo'), 'json'),
-  ).rejects.toThrow(
+  await expect(extractDataFromResponse(new Response('foo'), 'json')).rejects.toThrow(
     /^Unexpected token (('o', "foo" is not valid JSON)|(o in JSON at position 1))$/,
   )
-  expect(await extractDataFromResponse(new Response('foo'), 'json', true)).toBe(
-    'foo',
-  )
-  expect(
-    await extractDataFromResponse(new Response('{"foo":"bar"}'), 'json'),
-  ).toEqual({ foo: 'bar' })
-  expect(
-    (await extractDataFromResponse(new Response('foo'), 'arrayBuffer'))
-      .byteLength,
-  ).toBe(3)
+  expect(await extractDataFromResponse(new Response('foo'), 'json', true)).toBe('foo')
+  expect(await extractDataFromResponse(new Response('{"foo":"bar"}'), 'json')).toEqual({
+    foo: 'bar',
+  })
+  expect((await extractDataFromResponse(new Response('foo'), 'arrayBuffer')).byteLength).toBe(3)
 
   // binary type fallback when type method throws and fallback=true
   const res = new Response('fallback text')
@@ -60,9 +49,7 @@ test('extractDataFromResponse', async () => {
     })
     return c
   }
-  expect(await extractDataFromResponse(res, 'arrayBuffer', true)).toBe(
-    'fallback text',
-  )
+  expect(await extractDataFromResponse(res, 'arrayBuffer', true)).toBe('fallback text')
 
   // text() throws without fallback — json/text types
   const res3 = new Response('unused')
@@ -76,12 +63,8 @@ test('extractDataFromResponse', async () => {
     })
     return c
   }
-  await expect(extractDataFromResponse(res3, 'text')).rejects.toThrow(
-    'text-failed',
-  )
-  await expect(extractDataFromResponse(res3, 'json')).rejects.toThrow(
-    'text-failed',
-  )
+  await expect(extractDataFromResponse(res3, 'text')).rejects.toThrow('text-failed')
+  await expect(extractDataFromResponse(res3, 'json')).rejects.toThrow('text-failed')
 
   // text() throws with fallback=true — json/text types
   const res4 = new Response('unused')
@@ -110,7 +93,5 @@ test('extractDataFromResponse', async () => {
     })
     return c
   }
-  await expect(extractDataFromResponse(res2, 'arrayBuffer')).rejects.toThrow(
-    'boom',
-  )
+  await expect(extractDataFromResponse(res2, 'arrayBuffer')).rejects.toThrow('boom')
 })
